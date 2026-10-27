@@ -1,0 +1,893 @@
+/* CSS Variables for consistency */
+:root {
+    --primary-blue: #115272;
+    --secondary-blue: #004a8b;
+    --accent-blue: #0b3d6d;
+    --dark-blue: #084157;
+    --bg-primary: #f0f4f7;
+    --bg-secondary: #f0f0f0;
+    --white: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --text-light: #777777;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    --shadow-heavy: rgba(0, 0, 0, 0.25);
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+}
+
+/* Activity User Styling */
+.activity-user {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-left: 0.25rem;
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    background-attachment: fixed;
+    font-family: 'Montserrat', system-ui, -apple-system, Arial, Helvetica, sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+.container {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(17, 82, 114, 0.08);
+    border: 1px solid rgba(17, 82, 114, 0.1);
+    position: relative;
+    overflow: hidden;
+    animation: none;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Removed fadeInUp animation for better performance */
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue), var(--accent-blue));
+}
+
+/* Dashboard Cards - Performance Optimized */
+.dashboard-card {
+    border: none;
+    border-radius: 16px;
+    background: var(--white);
+    box-shadow: 0 4px 20px var(--shadow-light);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    will-change: transform;
+    backface-visibility: hidden;
+    /* Removed slideInUp animation for better performance */
+}
+
+/* Removed slideInUp animation for better performance */
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+    transform: scaleX(0);
+    transition: transform 0.15s ease;
+    transform-origin: left;
+    will-change: transform;
+}
+
+.dashboard-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(17, 82, 114, 0.05), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.dashboard-card:hover::before {
+    transform: scaleX(1);
+}
+
+.dashboard-card:hover::after {
+    opacity: 1;
+}
+
+.dashboard-card:hover {
+    /* Simplified hover - removed transform for better performance */
+    box-shadow: 0 6px 20px var(--shadow-medium);
+}
+
+.dashboard-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem 1rem;
+    position: relative;
+}
+
+.dashboard-card img {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-bottom: 0.75rem;
+    filter: drop-shadow(0 2px 6px var(--shadow-light));
+    transition: transform 0.2s ease;
+    will-change: transform;
+    transform: translateZ(0);
+    /* SVG specific optimizations */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    shape-rendering: geometricPrecision;
+}
+
+.dashboard-card:hover img {
+    /* Removed transform scaling for better performance */
+    filter: drop-shadow(0 4px 8px var(--shadow-medium));
+}
+
+.dashboard-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: color 0.2s ease;
+}
+
+.dashboard-card:hover .dashboard-title {
+    color: var(--primary-blue);
+}
+
+.dashboard-count {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0;
+    position: relative;
+    line-height: 1;
+}
+
+.dashboard-count::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+    border-radius: 1px;
+    opacity: 0;
+    transition: opacity 0.2s ease, width 0.2s ease;
+}
+
+.dashboard-card:hover .dashboard-count::after {
+    opacity: 1;
+    width: 60px;
+}
+
+/* Trend Indicators */
+.card-trend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    border: 1px solid rgba(17, 82, 114, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.card-trend i {
+    font-size: 0.7rem;
+    margin-right: 0.3rem;
+}
+
+.trend-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.dashboard-card:hover .card-trend {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.02);
+}
+
+/* Calendar Header */
+.card-header-custom {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: var(--white);
+    font-weight: 700;
+    border-radius: 12px 12px 0 0;
+    padding: 0.8rem 1rem;
+    position: relative;
+    border: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    white-space: normal;
+    word-wrap: break-word;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card-header-custom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+/* Modern Calendar Styles - Performance Optimized */
+#calendar-wrapper {
+    position: relative;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+}
+
+.calendar-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+}
+
+.calendar-day-header {
+    font-weight: 700;
+    color: var(--primary-blue);
+    padding: 0.5rem 0.3rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    background: rgba(17, 82, 114, 0.06);
+    border-radius: 6px;
+    border: 1px solid rgba(17, 82, 114, 0.1);
+}
+
+.calendar-day {
+    position: relative;
+    padding: 0.5rem;
+    background: var(--white);
+    border: 1px solid rgba(17, 82, 114, 0.1);
+    border-radius: 8px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.calendar-day:hover {
+    border-color: var(--primary-blue);
+}
+
+.calendar-day-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+/* Removed hover effects for better performance */
+
+.task-badge {
+    display: inline-block;
+    padding: 0.2rem 0.4rem;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: var(--white);
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 0.2rem;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    min-width: 45px;
+}
+
+/* Removed subtlePulse animation for better performance */
+
+.empty-day {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    visibility: hidden;
+}
+
+.calendar-header {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.calendar-nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 1rem;
+}
+
+.calendar-nav-link {
+    color: var(--primary-blue);
+    font-size: 1.1rem;
+    text-decoration: none;
+    padding: 0.6rem;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1px solid rgba(17, 82, 114, 0.2);
+    transition: all 0.2s ease;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(17, 82, 114, 0.1);
+    will-change: transform;
+}
+
+.calendar-nav-link:hover {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: var(--white);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(17, 82, 114, 0.25);
+    border-color: transparent;
+}
+
+/* Mobile Responsiveness - Optimized */
+@media only screen and (max-width: 768px) {
+    .container {
+        margin-top: 0.5rem;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    
+    .dashboard-card-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .dashboard-card img {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .dashboard-title {
+        font-size: 0.75rem;
+    }
+    
+    .dashboard-count {
+        font-size: 1.8rem;
+    }
+    
+    .calendar-container {
+        gap: 3px;
+        padding: 0.5rem;
+    }
+    
+    .calendar-day {
+        min-height: 50px;
+        padding: 0.4rem;
+    }
+    
+    .calendar-day-number {
+        font-size: 0.9rem;
+    }
+    
+    .task-badge {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.3rem;
+        min-width: 40px;
+    }
+    
+    .card-header-custom {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media only screen and (max-width: 576px) {
+    .container {
+        padding: 0.75rem;
+    }
+    
+    .dashboard-card-body {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .dashboard-card img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .dashboard-title {
+        font-size: 0.7rem;
+    }
+    
+    .dashboard-count {
+        font-size: 1.6rem;
+    }
+    
+    .calendar-day {
+        min-height: 45px;
+        padding: 0.3rem;
+    }
+    
+    .calendar-day-number {
+        font-size: 0.8rem;
+    }
+    
+    .task-badge {
+        font-size: 0.55rem;
+        padding: 0.1rem 0.25rem;
+        min-width: 35px;
+    }
+    
+    .calendar-header {
+        font-size: 1.1rem;
+    }
+    
+    .card-header-custom {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Performance Optimizations */
+* {
+    box-sizing: border-box;
+}
+
+/* Removed GPU acceleration properties for better performance */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-card,
+    .calendar-day,
+    .dashboard-card img {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* Compact spacing adjustments */
+.mb-4, .mb-5 {
+    margin-bottom: 0.75rem !important;
+}
+
+.g-3 > * {
+    padding: 0.5rem !important;
+}
+
+/* Optimize text rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+}
+
+/* Container improvements for better layout */
+.row {
+    margin: 0;
+}
+
+/* Simplified task badge - no animations */
+.task-badge {
+    animation: none;
+    transition: none;
+}
+
+/* Compact Dashboard Cards */
+.compact-card {
+    height: auto;
+    min-height: 120px;
+}
+
+.compact-card .dashboard-card-body {
+    padding: 1rem 0.75rem;
+}
+
+.small-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.split-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+.count-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.count-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.small-count {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: var(--primary-blue) !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+}
+
+.count-divider {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    opacity: 0.3;
+}
+
+.single-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0.5rem 0;
+}
+
+/* === NEW DASHBOARD ENHANCEMENTS === */
+
+/* Quick Actions */
+.quick-actions-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 20px var(--shadow-light);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+}
+
+.quick-actions-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem 0.5rem;
+    background: var(--white);
+    border: 1px solid rgba(17, 82, 114, 0.1);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transform: translateZ(0);
+}
+
+.quick-action-btn:hover {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: var(--white);
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 4px 15px rgba(17, 82, 114, 0.2);
+    text-decoration: none;
+}
+
+.quick-action-btn i {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+}
+
+.quick-action-btn span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Activity Feed */
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(17, 82, 114, 0.08);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(17, 82, 114, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.activity-icon i {
+    font-size: 0.9rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
+}
+
+.activity-time {
+    font-size: 0.7rem;
+    color: var(--text-light);
+}
+
+/* Progress Bars */
+.progress-item {
+    margin-bottom: 1rem;
+}
+
+.progress-item:last-child {
+    margin-bottom: 0;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.progress-value {
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(17, 82, 114, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+/* Removed shimmer animation for better performance */
+
+/* Dashboard Widget Styling */
+.dashboard-widget {
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 20px var(--shadow-light);
+    background: var(--white);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.widget-body {
+    padding: 1rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Force horizontal three column layout */
+.dashboard-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    margin: 0 !important;
+    gap: 1rem;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dashboard-calendar-col {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 50% !important;
+}
+
+.dashboard-widget-col {
+    flex: 0 0 calc(25% - 0.5rem) !important;
+    max-width: calc(25% - 0.5rem) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: calc(25% - 0.5rem) !important;
+}
+
+/* Override any Bootstrap conflicts */
+.dashboard-row > div[class*="dashboard-"] {
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Ensure no margin/padding interference */
+.dashboard-calendar-col .card,
+.dashboard-widget-col .card {
+    margin-bottom: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+
+/* Container adjustments */
+.container {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.dashboard-widget {
+    height: 500px;
+    min-height: 500px;
+}
+
+.col-lg-6 .card {
+    height: 500px;
+    min-height: 500px;
+}
+
+/* Enhanced Card Styling */
+.card-header-custom {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Mobile Optimizations for New Components */
+@media only screen and (max-width: 768px) {
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .quick-action-btn {
+        padding: 0.6rem 0.4rem;
+    }
+    
+    .quick-action-btn i {
+        font-size: 1rem;
+    }
+    
+    .quick-action-btn span {
+        font-size: 0.7rem;
+    }
+    
+    .activity-title {
+        font-size: 0.75rem;
+    }
+    
+    .activity-time {
+        font-size: 0.65rem;
+    }
+    
+    /* Stack widgets vertically on mobile */
+    .dashboard-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .dashboard-calendar-col,
+    .dashboard-widget-col {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-widget {
+        height: auto;
+        min-height: 300px;
+    }
+    
+    .widget-body {
+        padding: 0.75rem;
+    }
+}
+
+@media only screen and (max-width: 576px) {
+    .quick-actions-container {
+        padding: 0.75rem;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.4rem;
+    }
+    
+    .quick-action-btn {
+        padding: 0.5rem 0.2rem;
+    }
+    
+    .quick-action-btn span {
+        font-size: 0.6rem;
+    }
+    
+    /* Single column layout on very small screens */
+    .col-lg-6,
+    .col-lg-3 {
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-widget {
+        min-height: 250px;
+    }
+    
+    .widget-body {
+        padding: 0.6rem;
+    }
+    
+    .activity-item {
+        padding: 0.5rem 0;
+    }
+    
+    .progress-item {
+        margin-bottom: 0.75rem;
+    }
+}

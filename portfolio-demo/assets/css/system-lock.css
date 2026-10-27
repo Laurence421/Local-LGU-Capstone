@@ -1,0 +1,537 @@
+/* System Lock CSS - Modern & Professional */
+:root {
+    --primary-blue: #115272;
+    --secondary-blue: #004a8b;
+    --accent-blue: #0b3d6d;
+    --dark-blue: #084157;
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --shadow-heavy: rgba(0, 0, 0, 0.25);
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --white: #ffffff;
+}
+
+/* System Lock Overlay */
+.system-lock-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(0px);
+}
+
+.system-lock-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+    backdrop-filter: blur(15px);
+    background: rgba(17, 82, 114, 0.15);
+}
+
+/* System Lock Dialog */
+.system-lock-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    box-shadow: 
+        0 25px 50px rgba(17, 82, 114, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--glass-border);
+    min-width: 380px;
+    max-width: 90vw;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+}
+
+.system-lock-overlay.active .system-lock-dialog {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Lock Icon Animation */
+.system-lock-icon {
+    font-size: 3.5rem;
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    animation: lockPulse 2s ease-in-out infinite;
+    position: relative;
+}
+
+.system-lock-icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    border: 2px solid var(--primary-blue);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: ripple 2s ease-in-out infinite;
+}
+
+@keyframes lockPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Dialog Text */
+.system-lock-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.system-lock-message {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* Timer Display - Hidden by default since no auto-logout */
+.system-lock-timer {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin-bottom: 2rem;
+    font-family: 'Montserrat', monospace;
+    text-shadow: 0 2px 4px rgba(17, 82, 114, 0.1);
+    display: none; /* Hidden since we don't auto-logout */
+}
+
+.system-lock-timer.warning {
+    color: #e74c3c;
+    animation: timerWarning 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes timerWarning {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* Password Input Section */
+.system-lock-password-section {
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.password-input-group {
+    width: 100%;
+}
+
+.password-label {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input {
+    width: 100%;
+    padding: 0.875rem 3rem 0.875rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.password-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(17, 82, 114, 0.1);
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+    color: var(--primary-blue);
+}
+
+.password-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Action Buttons */
+.system-lock-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.system-lock-btn {
+    font-family: 'Montserrat', sans-serif;
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 120px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.system-lock-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.system-lock-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s ease;
+}
+
+.system-lock-btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.system-lock-btn.continue {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: var(--white);
+    box-shadow: 0 8px 25px rgba(17, 82, 114, 0.3);
+}
+
+.system-lock-btn.continue:hover {
+    background: linear-gradient(135deg, var(--secondary-blue), var(--accent-blue));
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(17, 82, 114, 0.4);
+}
+
+.system-lock-btn.verify {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: var(--white);
+    box-shadow: 0 8px 25px rgba(17, 82, 114, 0.3);
+}
+
+.system-lock-btn.verify:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--secondary-blue), var(--accent-blue));
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(17, 82, 114, 0.4);
+}
+
+.system-lock-btn.logout {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: var(--white);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+}
+
+.system-lock-btn.logout:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(231, 76, 60, 0.4);
+}
+
+/* Profile Dropdown Toggle Switch */
+.system-lock-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    width: 100%;
+}
+
+/* Bootstrap dropdown compatibility */
+.dropdown-item-text {
+    padding: 0.5rem 1rem !important;
+    margin: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.dropdown-item-text:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Profile dropdown icon styling */
+.profile .dropdown-menu .dropdown-item i {
+    color: var(--primary-blue) !important;
+    width: 16px;
+    text-align: center;
+}
+
+.system-lock-toggle-container:hover {
+    background: rgba(17, 82, 114, 0.05);
+}
+
+.system-lock-toggle-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #212529;
+    margin-right: auto;
+    white-space: nowrap;
+}
+
+.system-lock-toggle-label i {
+    margin-right: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--primary-blue);
+    width: 16px;
+}
+
+/* Modern Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    flex-shrink: 0;
+}
+
+.toggle-switch.active {
+    background: var(--primary-blue);
+}
+
+.toggle-switch .toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: var(--white);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(20px);
+}
+
+/* Status Indicator */
+.system-lock-status {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.system-lock-status.enabled {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+/* Enhanced notification styles to match image */
+.notification-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.notification-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.notification-subtitle {
+    font-weight: 400;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    line-height: 1.3;
+}
+
+/* Mobile Responsiveness */
+@media only screen and (max-width: 768px) {
+    .system-lock-dialog {
+        min-width: 320px;
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .system-lock-icon {
+        font-size: 3rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .system-lock-title {
+        font-size: 1.3rem;
+    }
+    
+    .system-lock-message {
+        font-size: 0.9rem;
+    }
+    
+    .system-lock-timer {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .system-lock-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .system-lock-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+        min-width: 100px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .system-lock-dialog {
+        min-width: 280px;
+        padding: 1.5rem 1rem;
+    }
+    
+    .system-lock-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .system-lock-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .system-lock-message {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .system-lock-timer {
+        font-size: 2rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .toggle-switch {
+        width: 40px;
+        height: 22px;
+    }
+    
+    .toggle-switch .toggle-slider {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .toggle-switch.active .toggle-slider {
+        transform: translateX(18px);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .system-lock-overlay,
+    .system-lock-dialog,
+    .system-lock-icon,
+    .system-lock-btn,
+    .toggle-switch,
+    .toggle-slider {
+        animation: none;
+        transition: none;
+    }
+    
+    .system-lock-icon::after {
+        animation: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .system-lock-dialog {
+        background: var(--white);
+        border: 2px solid var(--text-primary);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .system-lock-btn {
+        border: 2px solid currentColor;
+    }
+}

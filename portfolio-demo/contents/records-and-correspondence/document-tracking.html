@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* Static snapshot: there is no server, so answer requests and form posts with a notice */
+(function () {
+  var msg = 'This is a static portfolio snapshot of the LGU2 Research Section system. Saving, sending and searching need the live demo.';
+  function toast() {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.setAttribute('role', 'status');
+    t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;max-width:90%;padding:12px 18px;border-radius:10px;background:var(--brand-primary,#1a4d64);color:#fff;font:14px Montserrat,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)';
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 4000);
+  }
+  var demoReply = { success: false, status: 'error', demo: true, message: msg, data: [], requests: [] };
+  var realFetch = window.fetch;
+  window.fetch = function (input) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    if (/\.php(\?|$)/.test(url) || url === '' || url[0] === '?') {
+      toast();
+      return Promise.resolve(new Response(JSON.stringify(demoReply), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    }
+    return realFetch.apply(this, arguments);
+  };
+  var open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function (m, url) { this._demo = /\.php(\?|$)/.test(url) || url === '' || String(url)[0] === '?'; return open.apply(this, arguments); };
+  XMLHttpRequest.prototype.send = function () {
+    if (!this._demo) return send.apply(this, arguments);
+    var x = this;
+    Object.defineProperty(x, 'readyState', { value: 4 });
+    Object.defineProperty(x, 'status', { value: 200 });
+    Object.defineProperty(x, 'responseText', { value: JSON.stringify(demoReply) });
+    Object.defineProperty(x, 'response', { value: JSON.stringify(demoReply) });
+    toast();
+    setTimeout(function () { x.onreadystatechange && x.onreadystatechange(); x.onload && x.onload(); }, 0);
+  };
+  document.addEventListener('submit', function (e) { e.preventDefault(); toast(); }, true);
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Tracking - LGU Research System</title>
+
+    <!-- Fonts (preconnect to reduce OTS/CORS warnings) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Unicons -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Super Admin Styles -->
+    <link href="../../assets/css/super_styles.css" rel="stylesheet">
+
+    <!-- System Lock CSS -->
+    <link href="../../assets/css/system-lock.css" rel="stylesheet">
+    </head>
+<body>
+    <!-- Super Admin Header -->
+    <script>window.APP_BASE = new URL("../../", location.href).pathname.replace(/\/$/, '');</script>
+<!-- Portfolio demo banner -->
+<div class="demo-banner" role="status" style="background: var(--brand-accent); color: var(--footer-text); text-align: center; font-size: 0.875rem; padding: 0.375rem 1rem;">
+    <i class="fas fa-circle-info me-1"></i>
+    Static portfolio snapshot with sample data: buttons that save, send or search are turned off.</div>
+
+<!-- Top Blue Bar with Centered Logo -->
+<div class="top-bar d-none d-md-block">
+    <div class="top-bar-inner d-flex align-items-center justify-content-center">
+        <img class="top-bar-logo" src="../../assets/img/LGU2.png" alt="QC Logo">
+    </div>
+</div>
+
+<!-- Header -->
+<header class="header d-flex align-items-center">
+    <!-- Burger Menu Button -->
+    <div class="burger-container">
+        <button class="burger-btn" type="button" onclick="openSidebar()">
+            <i class="uil uil-bars"></i>
+        </button>
+    </div>
+    
+    <!-- Logo & Title -->
+    <div class="header-brand d-flex align-items-center">
+        <img class="header-logo" src="../../assets/img/LGU2.png" alt="QC">
+        <h1 class="header-title d-none d-sm-block">LOCAL GOVERNMENT UNIT 2</h1>
+    </div>
+    
+    <!-- Right Side Actions -->
+    <div class="header-actions ms-auto d-flex align-items-center gap-3">
+        
+        <!-- Profile Dropdown -->
+                <div class="profile-dropdown dropdown">
+            <button class="dropdown-toggle d-flex align-items-center gap-2" type="button" onclick="toggleDropdown(this)">
+                <div class="avatar-sm">
+                    <img src="../../assets/img/default-avatar.png" alt="Avatar" onerror="this.src=(window.APP_BASE || '') + '/assets/img/default-avatar.png'">
+                </div>
+                <span class="user-name d-none d-md-inline">Demo Administrator</span>
+                <i class="fas fa-caret-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="../../profile.html">
+                        <i class="fas fa-user-gear me-2"></i>Profile Settings
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <div class="dropdown-item-text">
+                        <div class="system-lock-toggle-container">
+                            <div class="system-lock-toggle-label">
+                                <i class="fas fa-shield-alt"></i>
+                                System Lock
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="toggle-switch" id="systemLockToggle" onclick="window.systemLock?.toggleSystemLock()">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="#" onclick="showLogoutModal(); return false;">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+            </div>
+</header>
+
+<!-- Logout Confirmation Modal -->
+<div class="logout-modal" id="logoutModal">
+    <div class="logout-modal-backdrop" onclick="hideLogoutModal()"></div>
+    <div class="logout-modal-content">
+        <div class="logout-modal-header">
+            <i class="fas fa-sign-out-alt logout-icon"></i>
+            <h3>Confirm Logout</h3>
+        </div>
+        <div class="logout-modal-body">
+            <p>Are you sure you want to logout from your account?</p>
+        </div>
+        <div class="logout-modal-footer">
+            <button class="btn-cancel" onclick="hideLogoutModal()">Cancel</button>
+            <button class="btn-logout" onclick="confirmLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// Dropdown Toggle
+function toggleDropdown(button) {
+    const dropdown = button.closest('.dropdown');
+    const menu = dropdown.querySelector('.dropdown-menu');
+    
+    // Close all other dropdowns first
+    document.querySelectorAll('.dropdown-menu.show').forEach(function(openMenu) {
+        if (openMenu !== menu) {
+            openMenu.classList.remove('show');
+        }
+    });
+    
+    menu.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Logout Modal Functions
+function showLogoutModal() {
+    document.getElementById('logoutModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function confirmLogout() {
+    window.location.href = (window.APP_BASE || '') + '/dashboard.html';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideLogoutModal();
+    }
+});
+</script>
+
+    <!-- Super Admin Sidebar -->
+    
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- Sidebar Offcanvas -->
+<aside class="sidebar-offcanvas" id="sidebarOffcanvas">
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close-sidebar" onclick="closeSidebar()">
+            <i class="uil uil-times"></i>
+        </button>
+    </div>
+
+    <!-- Branding Section -->
+    <div class="sidebar-branding">
+        <div class="d-flex align-items-center justify-content-center gap-3 px-3 py-2">
+            <img src="../../assets/img/LGU2.png" alt="QC Logo" style="width: 48px; height: 48px; object-fit: contain;">
+            <div>
+                <h6 class="mb-0 fw-bold" style="font-size: 13px; line-height: 1.3; color: var(--text-primary);">LOCAL GOVERNMENT UNIT 2</h6>
+            </div>
+        </div>
+    </div>
+
+    <hr class="sidebar-divider my-2">
+
+    <!-- User Profile Section -->
+    <div class="sidebar-profile">
+        <div class="profile-avatar">
+            <img src="../../assets/img/default-avatar.png" alt="Avatar" onerror="this.src=(window.APP_BASE || '') + '/assets/img/default-avatar.png'">
+        </div>
+        <div class="profile-info">
+            <h6 class="profile-name">Demo Administrator</h6>
+                        <span class="profile-email">demo@example.com</span>
+                    </div>
+    </div>
+
+    <hr class="sidebar-divider">
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" id="sideNav">
+        <!-- Dashboard - visible to all users -->
+        <div class="nav-group">
+            <a href="../../dashboard.html" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-gauge-high"></i></span>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Sections that live in the other LGU2 systems: one link each, opened through SSO (sso_go.php) -->
+                <div class="nav-group">
+            <a href="https://lgu2ordinance.jampzdev.com" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-gavel"></i></span>
+                <span>Ordinance and Resolution</span>
+            </a>
+        </div>
+                <div class="nav-group">
+            <a href="https://lgu2minutes.jampzdev.com" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-handshake-angle"></i></span>
+                <span>Minutes Section</span>
+            </a>
+        </div>
+                <div class="nav-group">
+            <a href="https://lgu2agenda.jampzdev.com" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-calendar-days"></i></span>
+                <span>Agenda and Briefing</span>
+            </a>
+        </div>
+                <div class="nav-group">
+            <a href="https://lgu2committee.jampzdev.com" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-users"></i></span>
+                <span>Committee Management System</span>
+            </a>
+        </div>
+                <div class="nav-group">
+            <a href="https://lgu2committeejournal.jampzdev.com" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-check-to-slot"></i></span>
+                <span>Committee Journal</span>
+            </a>
+        </div>
+        
+        <!-- Records and Correspondence -->
+                <div class="nav-group">
+            <button class="nav-group-toggle" type="button" onclick="toggleNavGroup(this)">
+                <span class="nav-icon"><i class="fas fa-folder-open"></i></span>
+                <span>Records and Correspondence</span>
+                <i class="fas fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-sublist">
+                <li><a href="measure-docketing.html">Measure Docketing</a></li>
+                <li><a href="categorization-and-classification.html">Categorization and Classification</a></li>
+                <li><a href="document-tracking.html">Document Tracking</a></li>
+            </ul>
+        </div>
+        
+        <!-- Archive Section (lives in the Archives system) -->
+                <div class="nav-group">
+            <a href="https://lgu2archives.jampzdev.com" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-box-archive"></i></span>
+                <span>Archive Section</span>
+            </a>
+        </div>
+        
+        <!-- Research Section -->
+                <div class="nav-group">
+            <button class="nav-group-toggle" type="button" onclick="toggleNavGroup(this)">
+                <span class="nav-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
+                <span>Research Section</span>
+                <i class="fas fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-sublist">
+                <li><a href="../legislative-research-section/draftmeasurestask.html">Draft Measures Task</a></li>
+                <li><a href="../legislative-research-section/similarity-checking-tool.html">Similarity Checking Tool</a></li>
+                <li><a href="../legislative-research-section/citationcheckingtool.html">Citation Checking Tool</a></li>
+                <li><a href="../legislative-research-section/measurecomparisontool.html">Measure Comparison Tool</a></li>
+                <li><a href="../legislative-research-section/document_management.html">Document Management</a></li>
+                                <li><a href="../legislative-research-section/data_synchronization.html">Data Synchronization</a></li>
+                            </ul>
+        </div>
+        
+        <!-- User Management -->
+                <div class="nav-group">
+            <button class="nav-group-toggle" type="button" onclick="toggleNavGroup(this)">
+                <span class="nav-icon"><i class="fas fa-users"></i></span>
+                <span>User Management</span>
+                <i class="fas fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-sublist">
+                <li><a href="../legislative-research-section/create_account.html">Create Account</a></li>
+                <li><a href="../legislative-research-section/accounts_list.html">Accounts List</a></li>
+            </ul>
+        </div>
+        
+        <!-- Super Admin Panel -->
+                <div class="nav-group">
+            <a href="../../super_admin_uitheme/super_dashboard.html" class="nav-link-single">
+                <span class="nav-icon"><i class="fas fa-shield-halved"></i></span>
+                <span>Super Admin Panel</span>
+            </a>
+        </div>
+            </nav>
+</aside>
+
+<script>
+// Sidebar Toggle Functions
+function openSidebar() {
+    document.getElementById('sidebarOffcanvas').classList.add('show');
+    document.getElementById('sidebarBackdrop').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    document.getElementById('sidebarOffcanvas').classList.remove('show');
+    document.getElementById('sidebarBackdrop').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Nav Group Toggle (for collapsible menus)
+function toggleNavGroup(button) {
+    const navGroup = button.closest('.nav-group');
+    navGroup.classList.toggle('open');
+}
+
+// Close sidebar on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSidebar();
+    }
+});
+</script>
+
+<div class="container mt-3">
+<div class="card card-body">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><i class="fas fa-route"></i> Document Tracking</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <form class="d-flex" method="GET" action="#">
+  <div class="input-group">
+    <input type="text" class="form-control" name="search" placeholder="Search records..." value="">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </div>
+</form>
+
+        </div>
+    </div>
+
+    <div class="row">
+                    <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        In Transit                        <span class="badge bg-light text-dark">3</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Docket No.</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                                                            <tr>
+                                            <td>MD-001</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal1">
+                                                    A Resolution Supporting the Revised Schedule of Market Stall Fees                                                </a>
+                                            </td>
+                                            <td>2026-07-24 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-005</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal5">
+                                                    An Ordinance Establishing the Riverbank Rehabilitation and Tree Planting                                                </a>
+                                            </td>
+                                            <td>2026-06-18 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-009</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal9">
+                                                    An Ordinance Establishing the Night Market Operations Guidelines                                                </a>
+                                            </td>
+                                            <td>2026-05-13 14:00:00</td>
+                                        </tr>
+                                                                                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        Under Review                        <span class="badge bg-light text-dark">3</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Docket No.</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                                                            <tr>
+                                            <td>MD-004</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal4">
+                                                    A Resolution Supporting the Public Library Digitization Project                                                </a>
+                                            </td>
+                                            <td>2026-06-27 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-007</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal7">
+                                                    A Resolution Supporting the CCTV Installation in Major Intersections                                                </a>
+                                            </td>
+                                            <td>2026-05-31 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-010</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal10">
+                                                    A Resolution Supporting the Solo Parent Livelihood Support                                                </a>
+                                            </td>
+                                            <td>2026-05-04 14:00:00</td>
+                                        </tr>
+                                                                                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        Processed                        <span class="badge bg-light text-dark">6</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Docket No.</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                                                            <tr>
+                                            <td>MD-002</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal2">
+                                                    An Ordinance Establishing the Free Rice Seed Distribution for Small Farmers                                                </a>
+                                            </td>
+                                            <td>2026-07-15 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-003</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal3">
+                                                    An Ordinance Establishing the Free Annual Medical Check-ups for Senior Citizens                                                </a>
+                                            </td>
+                                            <td>2026-07-06 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-006</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal6">
+                                                    An Ordinance Establishing the Covered Court Construction in Barangay San Isidro                                                </a>
+                                            </td>
+                                            <td>2026-06-09 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-008</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal8">
+                                                    An Ordinance Establishing the Designated Loading and Unloading Zones                                                </a>
+                                            </td>
+                                            <td>2026-05-22 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-011</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal11">
+                                                    An Ordinance Establishing the Real Property Tax Amnesty Program                                                </a>
+                                            </td>
+                                            <td>2026-04-25 14:00:00</td>
+                                        </tr>
+                                                                            <tr>
+                                            <td>MD-012</td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#docModal12">
+                                                    An Ordinance Establishing the Fisherfolk Registration and Support Program                                                </a>
+                                            </td>
+                                            <td>2026-04-16 14:00:00</td>
+                                        </tr>
+                                                                                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+    <!-- Detail modals -->
+            <div class="modal fade" id="docModal1" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-001</p>
+                                <p><strong>Title:</strong> A Resolution Supporting the Revised Schedule of Market Stall Fees</p>
+                                <p><strong>Type:</strong> resolution</p>
+                                <p><strong>Status:</strong> pending</p>
+                                <p><strong>Created:</strong> 2026-07-18</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-07-24 14:00:00</p>
+                                <p><strong>Date Received:</strong> Pending</p>
+                                <p><strong>Remarks:</strong> Returned for minor revisions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal2" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-002</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Free Rice Seed Distribution for Small Farmers</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-07-09</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-07-15 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-07-16 08:30:00</p>
+                                <p><strong>Remarks:</strong> Received by the Secretariat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal3" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-003</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Free Annual Medical Check-ups for Senior Citizens</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-06-30</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-07-06 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-07-07 08:30:00</p>
+                                <p><strong>Remarks:</strong> Received by the Secretariat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal4" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-004</p>
+                                <p><strong>Title:</strong> A Resolution Supporting the Public Library Digitization Project</p>
+                                <p><strong>Type:</strong> resolution</p>
+                                <p><strong>Status:</strong> pending</p>
+                                <p><strong>Created:</strong> 2026-06-21</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-06-27 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-06-28 08:30:00</p>
+                                <p><strong>Remarks:</strong> Received by the Secretariat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal5" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-005</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Riverbank Rehabilitation and Tree Planting</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-06-12</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-06-18 14:00:00</p>
+                                <p><strong>Date Received:</strong> Pending</p>
+                                <p><strong>Remarks:</strong> Forwarded to committee</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal6" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-006</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Covered Court Construction in Barangay San Isidro</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-06-03</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-06-09 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-06-10 08:30:00</p>
+                                <p><strong>Remarks:</strong> Endorsed to the Presiding Officer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal7" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-007</p>
+                                <p><strong>Title:</strong> A Resolution Supporting the CCTV Installation in Major Intersections</p>
+                                <p><strong>Type:</strong> resolution</p>
+                                <p><strong>Status:</strong> pending</p>
+                                <p><strong>Created:</strong> 2026-05-25</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-05-31 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-06-01 08:30:00</p>
+                                <p><strong>Remarks:</strong> Forwarded to committee</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal8" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-008</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Designated Loading and Unloading Zones</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-05-16</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-05-22 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-05-23 08:30:00</p>
+                                <p><strong>Remarks:</strong> Endorsed to the Presiding Officer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal9" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-009</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Night Market Operations Guidelines</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-05-07</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-05-13 14:00:00</p>
+                                <p><strong>Date Received:</strong> Pending</p>
+                                <p><strong>Remarks:</strong> Forwarded to committee</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal10" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-010</p>
+                                <p><strong>Title:</strong> A Resolution Supporting the Solo Parent Livelihood Support</p>
+                                <p><strong>Type:</strong> resolution</p>
+                                <p><strong>Status:</strong> pending</p>
+                                <p><strong>Created:</strong> 2026-04-28</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-05-04 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-05-05 08:30:00</p>
+                                <p><strong>Remarks:</strong> Received by the Secretariat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal11" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-011</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Real Property Tax Amnesty Program</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-04-19</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-04-25 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-04-26 08:30:00</p>
+                                <p><strong>Remarks:</strong> Endorsed to the Presiding Officer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="modal fade" id="docModal12" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Document Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Document Information</h6>
+                                <p><strong>Document Code:</strong> MD-012</p>
+                                <p><strong>Title:</strong> An Ordinance Establishing the Fisherfolk Registration and Support Program</p>
+                                <p><strong>Type:</strong> ordinance</p>
+                                <p><strong>Status:</strong> docketed</p>
+                                <p><strong>Created:</strong> 2026-04-10</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2">Tracking Information</h6>
+                                <p><strong>Date Sent:</strong> 2026-04-16 14:00:00</p>
+                                <p><strong>Date Received:</strong> 2026-04-17 08:30:00</p>
+                                <p><strong>Remarks:</strong> Received by the Secretariat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- System Lock JavaScript -->
+    <script src="../../assets/js/system-lock.js"></script>
+</body>
+</html>

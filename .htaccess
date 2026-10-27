@@ -1,0 +1,17 @@
+# Block dotfiles (.env, .git, .htaccess itself)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block schema dumps, docs and dev files
+<FilesMatch "\.(sql|md|lock|yml|log)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Server-side-only folders
+    RewriteRule ^(config|migrations|tools|docs|vendor|src)(/|$) - [F,L]
+</IfModule>

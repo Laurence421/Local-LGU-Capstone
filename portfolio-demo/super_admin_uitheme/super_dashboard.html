@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+/* Static snapshot: there is no server, so answer requests and form posts with a notice */
+(function () {
+  var msg = 'This is a static portfolio snapshot of the LGU2 Research Section system. Saving, sending and searching need the live demo.';
+  function toast() {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.setAttribute('role', 'status');
+    t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;max-width:90%;padding:12px 18px;border-radius:10px;background:var(--brand-primary,#1a4d64);color:#fff;font:14px Montserrat,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)';
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 4000);
+  }
+  var demoReply = { success: false, status: 'error', demo: true, message: msg, data: [], requests: [] };
+  var realFetch = window.fetch;
+  window.fetch = function (input) {
+    var url = typeof input === 'string' ? input : (input && input.url) || '';
+    if (/\.php(\?|$)/.test(url) || url === '' || url[0] === '?') {
+      toast();
+      return Promise.resolve(new Response(JSON.stringify(demoReply), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    }
+    return realFetch.apply(this, arguments);
+  };
+  var open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function (m, url) { this._demo = /\.php(\?|$)/.test(url) || url === '' || String(url)[0] === '?'; return open.apply(this, arguments); };
+  XMLHttpRequest.prototype.send = function () {
+    if (!this._demo) return send.apply(this, arguments);
+    var x = this;
+    Object.defineProperty(x, 'readyState', { value: 4 });
+    Object.defineProperty(x, 'status', { value: 200 });
+    Object.defineProperty(x, 'responseText', { value: JSON.stringify(demoReply) });
+    Object.defineProperty(x, 'response', { value: JSON.stringify(demoReply) });
+    toast();
+    setTimeout(function () { x.onreadystatechange && x.onreadystatechange(); x.onload && x.onload(); }, 0);
+  };
+  document.addEventListener('submit', function (e) { e.preventDefault(); toast(); }, true);
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard - Research Section</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Unicons -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Super Admin Styles -->
+    <link rel="stylesheet" href="../assets/css/super_styles.css">
+    
+    <!-- System Lock CSS -->
+    <link href="../assets/css/system-lock.css" rel="stylesheet">
+    
+    <!-- Dashboard Styles -->
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1a1a2e 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0;
+            margin-bottom: 0;
+            box-shadow: none;
+        }
+        
+        .system-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .system-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+        
+        .system-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            color: inherit;
+        }
+        
+        .system-card.current {
+            border: 2px solid var(--primary-color);
+            background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, white 100%);
+        }
+        
+        .system-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .quick-action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Super Admin Header -->
+    <script>window.APP_BASE = new URL("../", location.href).pathname.replace(/\/$/, '');</script>
+<!-- Portfolio demo banner -->
+<div class="demo-banner" role="status" style="background: var(--brand-accent); color: var(--footer-text); text-align: center; font-size: 0.875rem; padding: 0.375rem 1rem;">
+    <i class="fas fa-circle-info me-1"></i>
+    Static portfolio snapshot with sample data: buttons that save, send or search are turned off.</div>
+
+<!-- Top Blue Bar with Centered Logo -->
+<div class="top-bar d-none d-md-block">
+    <div class="top-bar-inner d-flex align-items-center justify-content-center">
+        <img class="top-bar-logo" src="../assets/img/LGU2.png" alt="QC Logo">
+    </div>
+</div>
+
+<!-- Header -->
+<header class="header d-flex align-items-center">
+    <!-- Burger Menu Button -->
+    <div class="burger-container">
+        <button class="burger-btn" type="button" onclick="openSidebar()">
+            <i class="uil uil-bars"></i>
+        </button>
+    </div>
+    
+    <!-- Logo & Title -->
+    <div class="header-brand d-flex align-items-center">
+        <img class="header-logo" src="../assets/img/LGU2.png" alt="QC">
+        <h1 class="header-title d-none d-sm-block">LOCAL GOVERNMENT UNIT 2</h1>
+    </div>
+    
+    <!-- Right Side Actions -->
+    <div class="header-actions ms-auto d-flex align-items-center gap-3">
+        
+        <!-- Profile Dropdown -->
+                <div class="profile-dropdown dropdown">
+            <button class="dropdown-toggle d-flex align-items-center gap-2" type="button" onclick="toggleDropdown(this)">
+                <div class="avatar-sm">
+                    <img src="../assets/img/default-avatar.png" alt="Avatar" onerror="this.src=(window.APP_BASE || '') + '/assets/img/default-avatar.png'">
+                </div>
+                <span class="user-name d-none d-md-inline">Demo Administrator</span>
+                <i class="fas fa-caret-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="../profile.html">
+                        <i class="fas fa-user-gear me-2"></i>Profile Settings
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <div class="dropdown-item-text">
+                        <div class="system-lock-toggle-container">
+                            <div class="system-lock-toggle-label">
+                                <i class="fas fa-shield-alt"></i>
+                                System Lock
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="toggle-switch" id="systemLockToggle" onclick="window.systemLock?.toggleSystemLock()">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="#" onclick="showLogoutModal(); return false;">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+            </div>
+</header>
+
+<!-- Logout Confirmation Modal -->
+<div class="logout-modal" id="logoutModal">
+    <div class="logout-modal-backdrop" onclick="hideLogoutModal()"></div>
+    <div class="logout-modal-content">
+        <div class="logout-modal-header">
+            <i class="fas fa-sign-out-alt logout-icon"></i>
+            <h3>Confirm Logout</h3>
+        </div>
+        <div class="logout-modal-body">
+            <p>Are you sure you want to logout from your account?</p>
+        </div>
+        <div class="logout-modal-footer">
+            <button class="btn-cancel" onclick="hideLogoutModal()">Cancel</button>
+            <button class="btn-logout" onclick="confirmLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// Dropdown Toggle
+function toggleDropdown(button) {
+    const dropdown = button.closest('.dropdown');
+    const menu = dropdown.querySelector('.dropdown-menu');
+    
+    // Close all other dropdowns first
+    document.querySelectorAll('.dropdown-menu.show').forEach(function(openMenu) {
+        if (openMenu !== menu) {
+            openMenu.classList.remove('show');
+        }
+    });
+    
+    menu.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Logout Modal Functions
+function showLogoutModal() {
+    document.getElementById('logoutModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function confirmLogout() {
+    window.location.href = (window.APP_BASE || '') + '/dashboard.html';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideLogoutModal();
+    }
+});
+</script>
+    
+    <!-- Include Super Admin Sidebar -->
+    
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<!-- Sidebar Offcanvas -->
+<aside class="sidebar-offcanvas" id="sidebarOffcanvas">
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close-sidebar" onclick="closeSidebar()">
+            <i class="uil uil-times"></i>
+        </button>
+    </div>
+
+    <!-- Branding Section -->
+    <div class="sidebar-branding">
+        <div class="d-flex align-items-center justify-content-center gap-3 px-3 py-2">
+            <img src="../assets/img/LGU2.png" alt="LGU Logo" style="width: 48px; height: 48px; object-fit: contain;">
+            <div>
+                <h6 class="mb-0 fw-bold" style="font-size: 13px; line-height: 1.3; color: var(--text-primary);">LOCAL GOVERNMENT UNIT 2</h6>
+            </div>
+        </div>
+    </div>
+
+    <hr class="sidebar-divider my-2">
+
+    <!-- User Profile Section -->
+    <div class="sidebar-profile">
+        <div class="profile-avatar">
+            <img src="../assets/img/default-avatar.png" alt="Avatar" onerror="this.src=(window.APP_BASE || '') + '/assets/img/default-avatar.png'">
+        </div>
+        <div class="profile-info">
+            <h6 class="profile-name">Demo Administrator</h6>
+            <span class="profile-email">demo@example.com</span>
+        </div>
+    </div>
+
+    <hr class="sidebar-divider">
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" id="sideNav">
+                <!-- ========== SUPERADMIN VIEW ========== -->
+        
+        <!-- super_dashboard -->
+        <div class="nav-group">
+            <a href="super_dashboard.html" class="nav-link-single active">
+                <span class="nav-icon"><i class="fas fa-gauge-high"></i></span>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Ordinance and Resolution -->
+        <div class="nav-group">
+            <a href="https://lgu2ordinance.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-gavel"></i></span>
+                <span>Ordinance and Resolution</span>
+            </a>
+        </div>
+
+        <!-- Minutes Section -->
+        <div class="nav-group">
+            <a href="https://lgu2minutes.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-handshake-angle"></i></span>
+                <span>Minutes Section</span>
+            </a>
+        </div>
+
+        <!-- Agenda and Briefing -->
+        <div class="nav-group">
+            <a href="https://lgu2agenda.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-calendar-days"></i></span>
+                <span>Agenda and Briefing</span>
+            </a>
+        </div>
+
+        <!-- Committee Management -->
+        <div class="nav-group">
+            <a href="https://lgu2committee.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-users"></i></span>
+                <span>Committee Management</span>
+            </a>
+        </div>
+
+        <!-- Committee Journal -->
+        <div class="nav-group">
+            <a href="https://lgu2committeejournal.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-check-to-slot"></i></span>
+                <span>Committee Journal</span>
+            </a>
+        </div>
+
+        <!-- Journal -->
+        <div class="nav-group">
+            <a href="https://lgu2journal.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-book"></i></span>
+                <span>Journal</span>
+            </a>
+        </div>
+
+        <!-- Records and Correspondence -->
+        <div class="nav-group">
+            <a href="https://racs.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-folder-open"></i></span>
+                <span>Records and Correspondence</span>
+            </a>
+        </div>
+
+        <!-- Archive Section -->
+        <div class="nav-group">
+            <a href="https://lgu2archives.jampzdev.com" class="nav-link-single ">
+                <span class="nav-icon"><i class="fas fa-box-archive"></i></span>
+                <span>Archive Section</span>
+            </a>
+        </div>
+
+        <!-- Research Section -->
+        <div class="nav-group">
+            <a href="../dashboard.html" class="nav-link-single active">
+                <span class="nav-icon"><i class="fas fa-magnifying-glass-chart"></i></span>
+                <span>Research Section</span>
+            </a>
+        </div>
+
+            </nav>
+</aside>
+
+<script>
+// Sidebar Toggle Functions
+function openSidebar() {
+    document.getElementById('sidebarOffcanvas').classList.add('show');
+    document.getElementById('sidebarBackdrop').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    document.getElementById('sidebarOffcanvas').classList.remove('show');
+    document.getElementById('sidebarBackdrop').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Nav Group Toggle (for collapsible menus)
+function toggleNavGroup(button) {
+    const navGroup = button.closest('.nav-group');
+    navGroup.classList.toggle('open');
+}
+
+// Close sidebar on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSidebar();
+    }
+});
+</script>
+    
+    <!-- Main Content -->
+    
+    <div class="container">
+        <!-- Quick System Navigation -->
+        <div class="mb-3">
+            <h5 class="fw-bold mb-3"><i class="fas fa-layer-group me-2"></i>All Systems</h5>
+            <div class="row g-2">
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://racs.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #28a745">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Records and Correspondence</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2ordinance.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #dc3545">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Ordinance and Resolution</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2minutes.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #17a2b8">
+                                <i class="fas fa-handshake-angle"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Minutes Section</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2agenda.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #ffc107">
+                                <i class="fas fa-calendar-days"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Agenda and Briefing</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2committee.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #6f42c1">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Committee Management</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2committeejournal.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #20c997">
+                                <i class="fas fa-check-to-slot"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Committee Journal</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2journal.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #fd7e14">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Journal</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="https://lgu2archives.jampzdev.com" 
+                       class="system-card ">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #6c757d">
+                                <i class="fas fa-box-archive"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Archive Section</h6>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+                    <a href="#" 
+                       class="system-card current">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="system-icon" style="background-color: #0d6efd">
+                                <i class="fas fa-magnifying-glass-chart"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-semibold">Research Section</h6>
+                                                                <span class="badge bg-success mt-1" style="font-size: 0.65rem;">Current</span>
+                                                            </div>
+                        </div>
+                    </a>
+                </div>
+                            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="mb-3">
+            <div class="row g-2">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="text-muted mb-1 small">Total Records</h6>
+                                <h4 class="fw-bold mb-0">32</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="text-muted mb-1 small">Pending Items</h6>
+                                <h4 class="fw-bold mb-0">8</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="text-muted mb-1 small">Active Users</h6>
+                                <h4 class="fw-bold mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="text-muted mb-1 small">Recent Activity</h6>
+                                <h4 class="fw-bold mb-0">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Activity & Quick Actions -->
+        <div class="row g-2 mb-3">
+            <!-- Activity Chart -->
+            <div class="col-12 col-lg-8">
+                <div class="chart-card h-100">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-chart-bar me-2"></i>System Activity</h5>
+                    <img src="../assets/img/LGU2.png" alt="LGU Logo" style="width: 48px; height: 48px; object-fit: contain;">
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="col-12 col-lg-4">
+                <div class="chart-card h-100">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    <div class="d-grid gap-2">
+                        <a href="https://racs.jampzdev.com" class="quick-action-btn btn btn-success">
+                            <i class="fas fa-folder-open me-2"></i>Go to Records
+                        </a>
+                        <a href="https://lgu2ordinance.jampzdev.com" class="quick-action-btn btn btn-danger">
+                            <i class="fas fa-gavel me-2"></i>View Ordinances
+                        </a>
+                        <a href="https://lgu2agenda.jampzdev.com" class="quick-action-btn btn btn-warning">
+                            <i class="fas fa-calendar-days me-2"></i>Check Agenda
+                        </a>
+                        <a href="https://lgu2journal.jampzdev.com" class="quick-action-btn btn btn-info text-white">
+                            <i class="fas fa-book me-2"></i>Open Journal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Table -->
+        <div class="row g-2 mb-3">
+            <div class="col-12">
+                <div class="chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Action</th>
+                                    <th>User</th>
+                                    <th>Details</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-success">SSO Login</span>
+                                    </td>
+                                    <td>Demo Administrator</td>
+                                    <td>Logged in via SSO</td>
+                                    <td class="text-muted small">Just now</td>
+                                </tr>
+                                <!-- Add more activity rows from your database -->
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="fas fa-database me-2"></i>
+                                        Connect to database to see activity logs
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center py-4 text-muted">
+            <small>Super Admin Dashboard &copy; 2026 - LGU 2 Legislative System</small>
+        </div>
+    </div><!-- End Container -->
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- System Lock JS -->
+    <script src="../assets/js/system-lock.js"></script>
+    
+    <!-- Charts -->
+    <script>
+        // Activity Chart
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'System Activity',
+                    data: [12, 19, 8, 15, 22, 5, 10],
+                    backgroundColor: '#0d6efd',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: true,
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

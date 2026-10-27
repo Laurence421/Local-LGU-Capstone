@@ -1,0 +1,1365 @@
+ :root {
+     --red: #115272;
+     --red-dark: #115272;
+     --bg: #f0f0f0;
+ }
+
+ html,
+ body {
+     height: 100%;
+     margin: 0;
+     font-family: "Montserrat", system-ui, -apple-system, Arial, sans-serif;
+ }
+
+ body {
+     min-height: 100vh;
+     width: 100vw;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     overflow-x: hidden;
+     background: url('../img/updatedbg.png') center center/cover no-repeat fixed;
+ }
+
+ /* Centering stage */
+ .stage {
+     min-height: 75vh;
+     min-width: 75vw;
+     height: 75vh;
+     width: 75vw;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     padding: 32px;
+     box-sizing: border-box;
+     max-width: 100vw;
+    max-height: 100vh;
+    margin: auto;
+    border-radius: 32px;
+}
+
+.card {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    height: 100%;
+    min-height: 400px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    transition: height 0.2s, width 0.2s;
+}
+
+/* Add the missing diagonal background */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 52%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
+    z-index: 1;
+}
+
+
+.card::after {
+    content: "";
+    position: absolute;
+    inset: -18px;
+    background: transparent;
+    z-index: 0;
+    filter: blur(28px);
+    pointer-events: none;
+}
+
+
+
+/* left area for the brand */
+.brand {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 48%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-left: 48px;
+    padding-right: 0;
+}
+
+/* right area for the form */
+.form-area {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 52%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 34px 48px 34px 60px;
+    color: #fff;
+}
+
+/* LGU logo styling */
+.logo-wrap {
+    width: 100%;
+    max-width: 420px;
+}
+
+.logo {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    justify-content: flex-end;
+}
+
+.logo .lgutext {
+    font-weight: 800;
+    font-size: 64px;
+    letter-spacing: 1px;
+    color: var(--red);
+    line-height: 1;
+    text-shadow: 2px 4px 8px rgba(0,0,0,0.28);
+}
+
+.logo .unit {
+    font-weight: 800;
+    font-size: 64px;
+    color: #111;
+    line-height: 1;
+    text-shadow: 2px 4px 8px rgba(0,0,0,0.28);
+}
+
+.logo-small {
+    display: block;
+    margin-top: -6px;
+    font-size: 12px;
+    color: #6b6b6b;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.22);
+}
+
+/* Big red '2' to the right, overlapping */
+.big-two {
+    font-weight: 900;
+    font-size: 160px;
+    color: var(--red);
+    transform: translateX(-6px);
+    line-height: 0.85;
+    margin-top: 6px;
+    opacity: 0.95;
+    margin-left: 10px;
+    text-shadow: 4px 8px 16px rgba(0,0,0,0.32);
+}
+
+/* Form card content (right side) */
+.form-box {
+    width: 100%;
+    max-width: 320px;
+}
+
+.form-box h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.4px;
+    text-shadow: 1px 2px 6px rgba(0,0,0,0.22);
+}
+
+.form-box p.sub {
+    margin: 0 0 16px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.18);
+}
+
+.form-field {
+    margin-bottom: 14px;
+}
+
+label.small {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.18);
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 94.5%;
+    padding: 12px 10px;
+    border-radius: 8px;
+    border: 0;
+    font-size: 14px;
+    outline: none;
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.18);
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.22), inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    margin-bottom: 18px;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.18);
+}
+
+/* OTP Controls Styling */
+.otp-form ~ .controls {
+    margin-top: 15px;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.otp-form ~ .controls a {
+    font-size: 12px;
+}
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.18);
+}
+
+.remember input {
+    transform: scale(1.05);
+}
+
+.forgot {
+    color: #fff;
+    opacity: 0.9;
+    font-size: 13px;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.18);
+}
+
+.btn-login {
+    display: block;
+    width: 100%;
+    padding: 14px 10px;
+    border-radius: 10px;
+    border: 0;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(17, 82, 114, 0.3), 0 2px 8px rgba(0,0,0,0.15);
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-login:hover::before {
+    left: 100%;
+}
+
+.btn-login:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(17, 82, 114, 0.4), 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-login:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(17, 82, 114, 0.3), 0 1px 4px rgba(0,0,0,0.15);
+}
+
+/* small utility for right-aligned text */
+.right-small {
+    text-align: right;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+ /* Responsive */
+ @media (max-width:1200px) {
+     .stage {
+         width: 95vw;
+         min-width: 95vw;
+         padding: 12px;
+     }
+
+     .card {
+         max-width: 100vw;
+         height: 100%;
+     }
+ }
+
+ @media (max-width:980px) {
+     .stage {
+         width: 100vw;
+         min-width: 100vw;
+         padding: 0;
+     }
+
+     .card {
+         width: 100vw;
+         max-width: 100vw;
+         height: 100%;
+         min-height: 360px;
+     }
+
+     .brand {
+         flex: 0 0 54%;
+         padding-left: 24px;
+     }
+
+     .form-area {
+         flex: 0 0 46%;
+         padding: 34px 24px 34px 36px;
+     }
+ }
+
+ @media (max-width:760px) {
+     .stage {
+         min-height: 100vh;
+         height: 100vh;
+         width: 100vw;
+         min-width: 100vw;
+         padding: 0;
+     }
+
+     .card {
+         flex-direction: column;
+         height: auto;
+         min-height: 0;
+         padding: 12px;
+     }
+
+     /* Adapt .card::before for column layout: diagonal from top right to lower left */
+     .card::before {
+         width: 100%;
+         height: 60%;
+         left: 0;
+         right: 0;
+         top: 0;
+         bottom: auto;
+         background: linear-gradient(120deg, var(--red) 0%, var(--red-dark) 100%);
+         clip-path: polygon(100% 0, 100% 60%, 0 100%, 0 0);
+     }
+
+     .brand {
+         order: 1;
+         flex: 1 1 auto;
+         padding: 12px 12px 6px 12px;
+         justify-content: center;
+     }
+
+     .form-area {
+         order: 2;
+         padding: 18px 12px;
+         justify-content: center;
+     }
+
+     .big-two {
+         font-size: 100px
+     }
+
+     .logo .lgutext {
+         font-size: 36px
+     }
+ }
+
+/* Modern OTP Input Styling */
+.otp-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+/* OTP Form Specific Styling */
+.otp-form {
+    width: 100%;
+}
+
+.otp-form .form-field {
+    margin-bottom: 20px;
+}
+
+.otp-form .btn-login {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.otp-input {
+    width: 42px !important;
+    height: 42px;
+    padding: 0 !important;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(12px);
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.otp-input:focus {
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.08) translateY(-1px);
+    outline: none;
+}
+
+.otp-input.filled {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.25);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+}
+
+.otp-input.error {
+    border-color: #ff5252;
+    background: rgba(255, 82, 82, 0.25);
+    box-shadow: 0 2px 8px rgba(255, 82, 82, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: shake 0.6s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* OTP Form Enhancements */
+.otp-form {
+    animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-box.otp-mode {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Enhanced Error Styling */
+.error {
+    background: linear-gradient(135deg, rgba(255, 82, 82, 0.18), rgba(244, 67, 54, 0.12));
+    border: 1px solid rgba(255, 82, 82, 0.45);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    color: #ffcdd2 !important;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 6px 16px rgba(255, 82, 82, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: errorSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.4;
+}
+
+/* Error Icon */
+.error::before {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: -2px;
+    opacity: 0.9;
+}
+
+/* Error Content */
+.error-content {
+    flex: 1;
+}
+
+.error-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.error-message {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.3;
+}
+
+/* Invalid Credentials Specific Styling */
+.error.credentials-error {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.16), rgba(239, 83, 80, 0.12));
+    border-color: rgba(255, 107, 107, 0.4);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2), 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* OTP Error Specific Styling */
+.error.otp-error {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.16), rgba(239, 83, 80, 0.12));
+    border-color: rgba(255, 107, 107, 0.4);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.2), 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Enhanced animations */
+@keyframes errorSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.95);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-2px) scale(1.01);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Shake animation for critical errors */
+.error.shake {
+    animation: errorSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+               errorShake 0.6s 0.3s ease-in-out;
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-8px); }
+    30% { transform: translateX(8px); }
+    45% { transform: translateX(-6px); }
+    60% { transform: translateX(6px); }
+    75% { transform: translateX(-4px); }
+    90% { transform: translateX(2px); }
+}
+
+/* Subtle shimmer effect */
+.error::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: shimmer 3s infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success Message */
+.success {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(67, 160, 71, 0.1));
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    color: #c8e6c9 !important;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    animation: slideInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.success::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* Loading State */
+.btn-login.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn-login.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* OTP Timer */
+.otp-timer {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-block;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.otp-timer.warning {
+    color: #ffb74d;
+    background: rgba(255, 152, 0, 0.1);
+    border-color: rgba(255, 152, 0, 0.2);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.otp-timer.expired {
+    color: #ff5252;
+    background: rgba(255, 82, 82, 0.15);
+    border-color: rgba(255, 82, 82, 0.3);
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Resend OTP Link */
+.resend-otp {
+    display: inline-block;
+    margin-top: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: underline;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.resend-otp:hover {
+    color: #fff;
+}
+
+.resend-otp.disabled {
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+/* Interactive Error Enhancements */
+.error {
+    cursor: default;
+    user-select: none;
+}
+
+.error:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(255, 82, 82, 0.3), 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.error.credentials-error:hover {
+    box-shadow: 0 10px 24px rgba(255, 107, 107, 0.25), 0 5px 14px rgba(0, 0, 0, 0.1);
+}
+
+.error.otp-error:hover {
+    box-shadow: 0 10px 24px rgba(255, 152, 0, 0.25), 0 5px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Error message fade-in for better UX */
+.error-message {
+    animation: messageSlideIn 0.3s 0.2s both;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsive for OTP */
+@media (max-width: 480px) {
+    .otp-container {
+        gap: 8px;
+        max-width: 300px;
+        padding: 0 5px;
+    }
+    
+    .otp-input {
+        width: 38px !important;
+        height: 38px;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+    
+    .otp-timer {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .error, .success {
+        font-size: 11px;
+        padding: 14px 16px;
+        border-radius: 8px;
+        gap: 10px;
+    }
+    
+    .error-title {
+        font-size: 13px;
+    }
+    
+    .error-message {
+        font-size: 11px;
+    }
+    
+    .error::before {
+        font-size: 16px;
+    }
+}
+
+/* === FORGOT PASSWORD STYLING === */
+
+/* Success message styling */
+.success-message {
+    background: linear-gradient(135deg, #26d0ce 0%, #1dd1a1 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(26, 208, 206, 0.3);
+    text-align: center;
+}
+
+.success-message p {
+    margin: 0 0 10px 0;
+}
+
+.success-message p:last-child {
+    margin-bottom: 0;
+}
+
+/* Enhanced Form Styling - Only for Forgot Password States */
+.form-box[data-state="forgot_password"],
+.form-box[data-state="reset_sent"],
+.form-box[data-state="reset_form"] {
+    position: relative;
+    overflow: hidden;
+}
+
+.form-box[data-state="forgot_password"]::before,
+.form-box[data-state="reset_sent"]::before,
+.form-box[data-state="reset_form"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(17, 82, 114, 0.1) 0%, rgba(13, 63, 90, 0.1) 100%);
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.form-box[data-state="forgot_password"] h3,
+.form-box[data-state="reset_sent"] h3,
+.form-box[data-state="reset_form"] h3 {
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    font-size: 24px !important;
+}
+
+.form-box[data-state="forgot_password"] p.sub,
+.form-box[data-state="reset_sent"] p.sub,
+.form-box[data-state="reset_form"] p.sub {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 14px !important;
+    margin-bottom: 25px !important;
+    line-height: 1.4 !important;
+}
+
+/* Enhanced Form Fields - Only for Forgot Password States */
+.form-box[data-state="forgot_password"] .form-field,
+.form-box[data-state="reset_form"] .form-field {
+    margin-bottom: 20px !important;
+    position: relative;
+}
+
+.form-box[data-state="forgot_password"] .form-field label,
+.form-box[data-state="reset_form"] .form-field label {
+    display: block !important;
+    margin-bottom: 6px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 13px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Form inputs for forgot password */
+.form-box[data-state="forgot_password"] form .form-field input[type="email"],
+.form-box[data-state="reset_form"] form .form-field input[type="password"] {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    color: #ffffff !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(10px) !important;
+    box-sizing: border-box !important;
+    font-family: 'Montserrat', sans-serif !important;
+    outline: none !important;
+}
+
+.form-box[data-state="forgot_password"] form .form-field input[type="email"]::placeholder,
+.form-box[data-state="reset_form"] form .form-field input[type="password"]::placeholder {
+    color: #9ca3af !important;
+    opacity: 1 !important;
+}
+
+.form-box[data-state="forgot_password"] form .form-field input[type="email"]:focus,
+.form-box[data-state="reset_form"] form .form-field input[type="password"]:focus {
+    outline: none !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 0 0 2px rgba(17, 82, 114, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Enhanced Button Styling - Only for Forgot Password States */
+.form-box[data-state="forgot_password"] .btn-login,
+.form-box[data-state="reset_form"] .btn-login {
+    width: 100% !important;
+    padding: 12px 20px !important;
+    background: linear-gradient(135deg, #115272 0%, #0d3f5a 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-top: 10px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    box-shadow: 0 2px 4px rgba(17, 82, 114, 0.2) !important;
+}
+
+.form-box[data-state="forgot_password"] .btn-login:hover,
+.form-box[data-state="reset_form"] .btn-login:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(17, 82, 114, 0.3);
+}
+
+/* Enhanced Controls - Only for Forgot Password States */
+.form-box[data-state="forgot_password"] .controls,
+.form-box[data-state="reset_sent"] .controls,
+.form-box[data-state="reset_form"] .controls {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.form-box[data-state="forgot_password"] .controls a.forgot,
+.form-box[data-state="reset_sent"] .controls a.forgot,
+.form-box[data-state="reset_form"] .controls a.forgot {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: inline-block !important;
+}
+
+.form-box[data-state="forgot_password"] .controls a.forgot:hover,
+.form-box[data-state="reset_sent"] .controls a.forgot:hover,
+.form-box[data-state="reset_form"] .controls a.forgot:hover {
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* === PASSWORD VISIBILITY TOGGLE STYLING === */
+
+/* Password field wrapper */
+.password-field-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-field-wrapper input[type="password"],
+.password-field-wrapper input[type="text"] {
+    padding-right: 50px !important;
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #9ca3af;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+}
+
+.password-toggle:hover {
+    color: #6b7280;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.password-toggle:active {
+    transform: translateY(-50%) scale(0.9);
+}
+
+.password-toggle:focus {
+    outline: none;
+    color: #115272;
+}
+
+.password-toggle i {
+    transition: all 0.2s ease;
+}
+
+/* Animation for icon change */
+.password-toggle.show-password {
+    color: #115272;
+}
+
+.password-toggle.show-password:hover {
+    color: #0d3f5a;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .password-toggle {
+        font-size: 14px;
+        width: 28px;
+        height: 28px;
+        right: 10px;
+    }
+}
+
+/* ========================================
+   Data Privacy Modal Styles
+   ======================================== */
+
+.privacy-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    padding-top: 40px;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.privacy-modal-content {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.4s ease-out;
+    margin-bottom: 40px;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.privacy-modal-header {
+    background: linear-gradient(135deg, #115272 0%, #004a8b 100%);
+    padding: 30px;
+    text-align: center;
+    border-radius: 16px 16px 0 0;
+}
+
+.privacy-modal-header h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+    font-family: "Montserrat", sans-serif;
+}
+
+.privacy-subtitle {
+    margin: 10px 0 0 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.privacy-modal-body {
+    padding: 30px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.privacy-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.privacy-modal-body::-webkit-scrollbar-track {
+    background: #f0f4f7;
+    border-radius: 4px;
+}
+
+.privacy-modal-body::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #115272 0%, #004a8b 100%);
+    border-radius: 4px;
+}
+
+.privacy-modal-body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #004a8b 0%, #0d3f5a 100%);
+}
+
+.privacy-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(240, 244, 247, 0.5);
+    border-radius: 12px;
+    border-left: 4px solid #115272;
+    transition: all 0.3s ease;
+}
+
+.privacy-section:hover {
+    background: rgba(240, 244, 247, 0.8);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(17, 82, 114, 0.1);
+}
+
+.privacy-section:last-child {
+    margin-bottom: 0;
+}
+
+.privacy-section h3 {
+    margin: 0 0 15px 0;
+    color: #115272;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.privacy-section h3 i {
+    font-size: 22px;
+}
+
+.privacy-content p {
+    margin: 0 0 15px 0;
+    color: #333333;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.privacy-content ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #555555;
+}
+
+.privacy-content li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.privacy-content li:last-child {
+    margin-bottom: 0;
+}
+
+.privacy-modal-footer {
+    padding: 25px 30px;
+    background: rgba(240, 244, 247, 0.5);
+    border-radius: 0 0 16px 16px;
+    border-top: 1px solid rgba(17, 82, 114, 0.1);
+}
+
+.privacy-checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.privacy-checkbox-container:hover {
+    border-color: rgba(17, 82, 114, 0.3);
+    background: rgba(255, 255, 255, 1);
+}
+
+.privacy-checkbox {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    cursor: pointer;
+    accent-color: #115272;
+    margin-top: 2px;
+}
+
+.privacy-checkbox-label {
+    cursor: pointer;
+    color: #333333;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    user-select: none;
+}
+
+.privacy-continue-btn {
+    width: 100%;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: "Montserrat", sans-serif;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.6;
+}
+
+.privacy-continue-btn.enabled {
+    background: linear-gradient(135deg, #115272 0%, #004a8b 100%);
+    cursor: pointer;
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(17, 82, 114, 0.3);
+}
+
+.privacy-continue-btn.enabled:hover {
+    background: linear-gradient(135deg, #004a8b 0%, #0d3f5a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(17, 82, 114, 0.4);
+}
+
+.privacy-continue-btn.enabled:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(17, 82, 114, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .privacy-modal {
+        padding: 10px;
+    }
+    
+    .privacy-modal-content {
+        max-height: 95vh;
+    }
+    
+    .privacy-modal-header {
+        padding: 20px;
+    }
+    
+    .privacy-modal-header h2 {
+        font-size: 22px;
+    }
+    
+    .privacy-modal-body {
+        padding: 20px;
+        max-height: 55vh;
+    }
+    
+    .privacy-section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .privacy-section h3 {
+        font-size: 18px;
+    }
+    
+    .privacy-content p,
+    .privacy-content li {
+        font-size: 13px;
+    }
+    
+    .privacy-modal-footer {
+        padding: 20px;
+    }
+    
+    .privacy-checkbox-label {
+        font-size: 13px;
+    }
+    
+    .privacy-continue-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .privacy-modal-header h2 {
+        font-size: 20px;
+    }
+    
+    .privacy-section h3 {
+        font-size: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .privacy-content p,
+    .privacy-content li {
+        font-size: 12px;
+    }
+}

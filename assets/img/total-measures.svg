@@ -1,0 +1,65 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="totalMeasuresGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#115272;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0b3d6d;stop-opacity:1" />
+    </linearGradient>
+    <filter id="totalMeasuresShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="40" cy="40" r="35" fill="url(#totalMeasuresGradient)" filter="url(#totalMeasuresShadow)" opacity="0.9"/>
+  
+  <!-- Chart Base Circle -->
+  <circle cx="40" cy="40" r="20" fill="white" opacity="0.95" filter="url(#totalMeasuresShadow)"/>
+  
+  <!-- Pie Chart Segments -->
+  <!-- Segment 1 - Draft (35%) -->
+  <path d="M 40 20 A 20 20 0 0 1 57.32 50 L 40 40 Z" fill="#115272" opacity="0.8"/>
+  
+  <!-- Segment 2 - In Review (25%) -->
+  <path d="M 57.32 50 A 20 20 0 0 1 40 60 L 40 40 Z" fill="#0b3d6d" opacity="0.8"/>
+  
+  <!-- Segment 3 - Proposed (20%) -->
+  <path d="M 40 60 A 20 20 0 0 1 27.32 50 L 40 40 Z" fill="#115272" opacity="0.6"/>
+  
+  <!-- Segment 4 - Enacted (20%) -->
+  <path d="M 27.32 50 A 20 20 0 0 1 40 20 L 40 40 Z" fill="#4CAF50" opacity="0.8"/>
+  
+  <!-- Center Circle -->
+  <circle cx="40" cy="40" r="8" fill="white" opacity="0.95"/>
+  <circle cx="40" cy="40" r="6" fill="url(#totalMeasuresGradient)" opacity="0.9"/>
+  
+  <!-- Statistics Icons around the chart -->
+  <!-- Document stack icon -->
+  <g transform="translate(25, 25)">
+    <rect x="0" y="0" width="8" height="10" rx="1" fill="white" opacity="0.9"/>
+    <rect x="2" y="2" width="4" height="1" rx="0.5" fill="url(#totalMeasuresGradient)" opacity="0.7"/>
+    <rect x="2" y="4" width="3" height="1" rx="0.5" fill="url(#totalMeasuresGradient)" opacity="0.7"/>
+    <rect x="2" y="6" width="4" height="1" rx="0.5" fill="url(#totalMeasuresGradient)" opacity="0.7"/>
+  </g>
+  
+  <!-- Chart bars icon -->
+  <g transform="translate(47, 25)">
+    <rect x="0" y="6" width="2" height="4" rx="1" fill="white" opacity="0.9"/>
+    <rect x="3" y="4" width="2" height="6" rx="1" fill="white" opacity="0.9"/>
+    <rect x="6" y="2" width="2" height="8" rx="1" fill="white" opacity="0.9"/>
+  </g>
+  
+  <!-- Counter icon -->
+  <g transform="translate(25, 47)">
+    <circle cx="4" cy="4" r="4" fill="white" opacity="0.9"/>
+    <text x="4" y="6" font-family="Arial, sans-serif" font-size="4" font-weight="bold" text-anchor="middle" fill="url(#totalMeasuresGradient)">∑</text>
+  </g>
+  
+  <!-- Status icon -->
+  <g transform="translate(47, 47)">
+    <circle cx="4" cy="4" r="3" fill="white" opacity="0.9"/>
+    <path d="M2 4 L3.5 5.5 L6 2.5" stroke="url(#totalMeasuresGradient)" stroke-width="1" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Center label -->
+  <text x="40" y="65" font-family="Arial, sans-serif" font-size="6" font-weight="bold" text-anchor="middle" fill="white" opacity="0.9">TOTAL</text>
+</svg>

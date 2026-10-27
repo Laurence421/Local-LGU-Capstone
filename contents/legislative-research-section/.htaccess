@@ -1,0 +1,5 @@
+<Files "receive_from_lgu2.php">
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} !^POST$ [NC]
+    RewriteRule .* - [F]
+</Files>
