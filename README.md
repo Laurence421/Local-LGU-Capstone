@@ -10,7 +10,7 @@ other through APIs and share a single sign-on.
 **[▶ Open the live portfolio demo](https://laurence421.github.io/Local-LGU-Capstone/)**: no login needed,
 all data is fictional sample data. Everything in the sidebar works: send a draft measure to Records, add
 reviews, filter and page through the tabs, export a PDF, manage accounts, and submit and process document
-requests. Your changes stay in your own browser; **Reset demo** in the banner restores the sample data.
+requests. Your changes last until you close the tab; **Reset demo** in the banner restores the sample data.
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -107,8 +107,8 @@ Two ways to show the system without real data or a login. Both use made-up sampl
 **Static demo on GitHub Pages (free, never expires).** `portfolio-demo/` holds every page as HTML plus a
 small in-browser backend: `demo-backend.js` (source in `tools/static-demo/`) answers the requests the pages
 send to the PHP endpoints, using the sample data in `demo-data.js`, and redraws the pages the server used to
-fill in (Draft Measures tabs, Accounts, dashboard counters). Changes are saved in the visitor's browser
-(localStorage). `.github/workflows/pages.yml` publishes it: in the GitHub repository, set Settings → Pages →
+fill in (Draft Measures tabs, Accounts, dashboard counters). Changes last for the visitor's browser tab
+(sessionStorage), so closing the tab starts fresh. `.github/workflows/pages.yml` publishes it: in the GitHub repository, set Settings → Pages →
 Source to "GitHub Actions", push, and the site appears at `https://<user>.github.io/<repo>/`.
 
 To rebuild it after changing pages, run the live demo locally (below, with `DEMO_MODE=true`) and:

@@ -2,8 +2,9 @@
  * In-browser backend for the static GitHub Pages demo.
  *
  * GitHub Pages cannot run PHP, so this file answers the requests the pages send to the PHP endpoints,
- * using the sample data in demo-data.js. Changes are kept in this browser (localStorage) until
- * "Reset demo" is clicked. Pages the server used to fill in (Draft Measures tabs, Accounts, dashboard
+ * using the sample data in demo-data.js. Changes are kept for this browser tab (sessionStorage): they survive
+ * moving between pages and reloading, and closing the tab or clicking "Reset demo" starts fresh. Pages the
+ * server used to fill in (Draft Measures tabs, Accounts, dashboard
  * counters) are redrawn from that data by cloning the rows and cards already in the page, so they look
  * exactly like the real system.
  */
@@ -25,7 +26,7 @@
   }
   var db;
   try {
-    db = JSON.parse(localStorage.getItem(STORE_KEY)) || freshData();
+    db = JSON.parse(sessionStorage.getItem(STORE_KEY)) || freshData();
   } catch (e) {
     db = freshData();
   }
@@ -34,10 +35,10 @@
   });
 
   function save() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch (e) { /* storage full or blocked */ }
+    try { sessionStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch (e) { /* storage full or blocked */ }
   }
   function resetDemo() {
-    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    try { sessionStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
     flashNext('The demo data has been reset.');
     location.href = location.pathname;
   }
@@ -667,7 +668,7 @@
   function decorateBanner() {
     var banner = document.querySelector('.demo-banner');
     if (!banner) return;
-    banner.innerHTML = '<i class="fas fa-circle-info me-1"></i> Portfolio demo with sample data: your changes stay in this browser. ' +
+    banner.innerHTML = '<i class="fas fa-circle-info me-1"></i> Portfolio demo with sample data: your changes last until you close this tab. ' +
       '<a href="#" style="color: inherit; font-weight: 600; text-decoration: underline;" onclick="resetLguDemo(); return false;">Reset demo</a>';
   }
 
