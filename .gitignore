@@ -8,3 +8,4 @@ contents/legislative-research-section/uploads/
 tools/*.local.php
 assets/img/avatars/*
 !assets/img/avatars/.htaccess
+SETUP.local.md
