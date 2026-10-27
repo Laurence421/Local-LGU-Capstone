@@ -134,9 +134,9 @@ function getSSOUrl($systemKey) {
         return url('dashboard.php');
     }
 
-    // The portfolio demo never mints tokens: link to the other system's public site only
+    // The portfolio demo never mints tokens: it opens the system's preview page instead
     if (DEMO_MODE) {
-        return $systems[$systemKey]['url'];
+        return lgu2_preview_url($systemKey) ?? url('dashboard.php');
     }
     
     // For RACS (Laravel), use the SSO route

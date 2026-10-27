@@ -16,7 +16,11 @@ if (!isset($systems[$system])) {
     exit;
 }
 
-// The portfolio demo never mints tokens: it only points at the other system's public site
-$target = (canUseSSO() && !DEMO_MODE) ? getSSOUrl($system) : $systems[$system]['url'];
+// The portfolio demo never mints tokens: it opens the system's preview page
+if (DEMO_MODE) {
+    $target = lgu2_preview_url($system) ?? url('dashboard.php');
+} else {
+    $target = canUseSSO() ? getSSOUrl($system) : $systems[$system]['url'];
+}
 header('Location: ' . $target);
 exit;

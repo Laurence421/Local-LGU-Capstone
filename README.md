@@ -28,6 +28,10 @@ requests. Your changes last until you close the tab; **Reset demo** in the banne
 - **Records and Correspondence**: docketing and tracking of measures received from the research section.
 - **User management** with role-based access (admin, research, records, ordinance, committee and more).
 - **Super Admin panel** that opens the other eight LGU2 systems through single sign-on.
+- **Connected systems in the demo:** the other teams' systems (Ordinance and Resolution, Minutes, Agenda,
+  Committee, Committee Journal, Archive) are separate applications in the real deployment. In the demo each
+  opens a preview page showing what that system does with the shared data, so a measure you send from
+  Research shows up on the Agenda and in Committee.
 
 | Draft measures | Measure docketing |
 |---|---|

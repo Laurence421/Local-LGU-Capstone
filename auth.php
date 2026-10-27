@@ -19,6 +19,10 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 function auth_redirect_to_login($message)
 {
+    // Portfolio demo: start a fresh demo session on the requested page instead
+    if (DEMO_MODE && demo_login()) {
+        return;
+    }
     session_unset();
     session_destroy();
     session_start();

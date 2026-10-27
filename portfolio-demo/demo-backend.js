@@ -654,6 +654,59 @@
     });
   }
 
+  // Previews of the other LGU2 systems: same columns as includes/lgu2_preview.php, from this visitor's data
+  function previewRows(key) {
+    var latest = function (m) { return m.datetime_submitted || m.date_created || ''; };
+    var desc = function (rows, i) { return rows.sort(function (a, b) { return String(b[i]).localeCompare(String(a[i])); }); };
+    var ms = db.measures;
+    switch (key) {
+      case 'ordinance':
+        return desc(ms.filter(function (m) { return READINGS.indexOf(m.measure_status) >= 0 || m.measure_status === 'Enacted'; })
+          .map(function (m) { return [m.sp_no || m.docket_no, m.measure_title, m.measure_type, m.introducers, m.measure_status, latest(m)]; }), 5);
+      case 'minutes': {
+        var actions = { '1st Reading': 'Approved on first reading', '2nd Reading': 'Approved on second reading',
+          '3rd Reading': 'Approved on third reading', 'Enacted': 'Approved on third and final reading; enacted' };
+        return desc(ms.filter(function (m) { return actions[m.measure_status]; })
+          .map(function (m) { return [latest(m).slice(0, 10), m.measure_title, m.measure_type, actions[m.measure_status]]; }), 0);
+      }
+      case 'agenda': {
+        var next = { 'In Review for Docketing': 'Referral to committee', '1st Reading': 'Second reading', '2nd Reading': 'Third reading', '3rd Reading': 'Final approval' };
+        return ms.filter(function (m) { return next[m.measure_status]; })
+          .sort(function (a, b) { return String(latest(a)).localeCompare(String(latest(b))); })
+          .map(function (m, i) { return [i + 1, m.measure_title, m.measure_type, next[m.measure_status], String(m.introducers || '').split(',')[0]]; });
+      }
+      case 'committee':
+        return desc(db.docketing.map(function (d) {
+          var status = String(d.measure_status || '');
+          return [d.MFL_Name, d.docket_no, d.measure_title, status.charAt(0).toUpperCase() + status.slice(1), d.datetime_submitted];
+        }), 4);
+      case 'committee-journal': {
+        var stages = { '1st_review': '1st Review', '2nd_review': '2nd Review', 'final_review': 'Final Review' };
+        return desc(db.reviews.map(function (r) {
+          var m = measureById(r.m9_SC_ID);
+          return [r.reviewed_at, m ? m.measure_title : 'Measure #' + r.m9_SC_ID, stages[r.review_stage] || r.review_stage, r.review_notes, r.reviewed_by];
+        }), 0);
+      }
+      case 'archives':
+        return desc(ms.filter(function (m) { return m.measure_status === 'Enacted'; })
+          .map(function (m) { return [m.sp_no, m.year_cc, m.measure_title, m.measure_type, m.category]; }), 1);
+    }
+    return null;
+  }
+
+  function renderPreview(tbody) {
+    var rows = previewRows(tbody.getAttribute('data-preview'));
+    if (!rows) return;
+    var search = (params.get('search') || '').trim().toLowerCase();
+    if (search) rows = rows.filter(function (r) { return r.join(' ').toLowerCase().indexOf(search) >= 0; });
+    var columns = tbody.closest('table').querySelectorAll('thead th').length;
+    tbody.innerHTML = rows.length
+      ? rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('')
+      : '<tr><td colspan="' + columns + '" class="text-center">No records found</td></tr>';
+    var input = document.querySelector('input[name="search"]');
+    if (input) input.value = params.get('search') || '';
+  }
+
   // Search boxes on pages the server used to filter: filter the rows already on the page
   function filterRowsBySearch() {
     var q = (params.get('search') || '').trim().toLowerCase();
@@ -677,6 +730,7 @@
     if (page === 'draftmeasurestask') renderDraftMeasures();
     else if (page === 'accounts_list') renderAccounts();
     else if (page === 'dashboard') renderDashboard();
+    else if (document.querySelector('tbody[data-preview]')) renderPreview(document.querySelector('tbody[data-preview]'));
     else filterRowsBySearch();
 
     var flash = null;

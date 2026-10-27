@@ -75,7 +75,8 @@ if (!function_exists('hasAccess')) {
             </a>
         </div>
 
-        <!-- Sections that live in the other LGU2 systems: one link each, opened through SSO (sso_go.php) -->
+        <!-- Sections that live in the other LGU2 systems: one link each, opened through SSO (sso_go.php).
+             In the portfolio demo they open a preview page instead (includes/lgu2_preview.php). -->
         <?php
         $otherSystems = [
             ['system' => 'ordinance', 'roles' => ['ordinance', 'admin'], 'icon' => 'fa-gavel', 'label' => 'Ordinance and Resolution'],
@@ -90,7 +91,7 @@ if (!function_exists('hasAccess')) {
             }
         ?>
         <div class="nav-group">
-            <a href="<?= e(url('sso_go.php?system=' . $other['system'])) ?>" class="nav-link-single">
+            <a href="<?= e(lgu2_system_link($other['system'])) ?>" class="nav-link-single">
                 <span class="nav-icon"><i class="fas <?= e($other['icon']) ?>"></i></span>
                 <span><?= e($other['label']) ?></span>
             </a>
@@ -116,7 +117,7 @@ if (!function_exists('hasAccess')) {
         <!-- Archive Section (lives in the Archives system) -->
         <?php if (hasAccess($userRole, ['archive', 'admin'])): ?>
         <div class="nav-group">
-            <a href="<?= e(url('sso_go.php?system=archives')) ?>" class="nav-link-single">
+            <a href="<?= e(lgu2_system_link('archives')) ?>" class="nav-link-single">
                 <span class="nav-icon"><i class="fas fa-box-archive"></i></span>
                 <span>Archive Section</span>
             </a>

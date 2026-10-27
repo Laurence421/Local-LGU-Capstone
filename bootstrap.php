@@ -260,3 +260,21 @@ function demo_guard_request()
 if (DEMO_MODE && PHP_SAPI !== 'cli') {
     demo_guard_request();
 }
+
+/** Demo-mode page that stands in for another LGU2 system (null for this system itself). */
+function lgu2_preview_url($system)
+{
+    $pages = [
+        'ordinance' => 'contents/lgu2-preview/ordinance.php', 'minutes' => 'contents/lgu2-preview/minutes.php',
+        'agenda' => 'contents/lgu2-preview/agenda.php', 'committee' => 'contents/lgu2-preview/committee.php',
+        'committeejournal' => 'contents/lgu2-preview/committee-journal.php', 'journal' => 'contents/lgu2-preview/committee-journal.php',
+        'archives' => 'contents/lgu2-preview/archives.php', 'racs' => 'contents/records-and-correspondence/measure-docketing.php',
+    ];
+    return isset($pages[$system]) ? url($pages[$system]) : null;
+}
+
+/** Link to another LGU2 system: through SSO normally, to its preview page in the portfolio demo. */
+function lgu2_system_link($system)
+{
+    return (DEMO_MODE && lgu2_preview_url($system)) ? lgu2_preview_url($system) : url('sso_go.php?system=' . $system);
+}
