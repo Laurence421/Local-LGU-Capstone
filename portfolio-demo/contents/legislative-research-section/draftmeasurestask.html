@@ -1,43 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-/* Static snapshot: there is no server, so answer requests and form posts with a notice */
-(function () {
-  var msg = 'This is a static portfolio snapshot of the LGU2 Research Section system. Saving, sending and searching need the live demo.';
-  function toast() {
-    var t = document.createElement('div');
-    t.textContent = msg;
-    t.setAttribute('role', 'status');
-    t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;max-width:90%;padding:12px 18px;border-radius:10px;background:var(--brand-primary,#1a4d64);color:#fff;font:14px Montserrat,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)';
-    document.body.appendChild(t);
-    setTimeout(function () { t.remove(); }, 4000);
-  }
-  var demoReply = { success: false, status: 'error', demo: true, message: msg, data: [], requests: [] };
-  var realFetch = window.fetch;
-  window.fetch = function (input) {
-    var url = typeof input === 'string' ? input : (input && input.url) || '';
-    if (/\.php(\?|$)/.test(url) || url === '' || url[0] === '?') {
-      toast();
-      return Promise.resolve(new Response(JSON.stringify(demoReply), { status: 200, headers: { 'Content-Type': 'application/json' } }));
-    }
-    return realFetch.apply(this, arguments);
-  };
-  var open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open = function (m, url) { this._demo = /\.php(\?|$)/.test(url) || url === '' || String(url)[0] === '?'; return open.apply(this, arguments); };
-  XMLHttpRequest.prototype.send = function () {
-    if (!this._demo) return send.apply(this, arguments);
-    var x = this;
-    Object.defineProperty(x, 'readyState', { value: 4 });
-    Object.defineProperty(x, 'status', { value: 200 });
-    Object.defineProperty(x, 'responseText', { value: JSON.stringify(demoReply) });
-    Object.defineProperty(x, 'response', { value: JSON.stringify(demoReply) });
-    toast();
-    setTimeout(function () { x.onreadystatechange && x.onreadystatechange(); x.onload && x.onload(); }, 0);
-  };
-  document.addEventListener('submit', function (e) { e.preventDefault(); toast(); }, true);
-})();
-</script>
+<script src="../../demo-data.js"></script>
+<script src="../../demo-backend.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Draft Measures Task - LGU Research System</title>
@@ -2229,7 +2194,7 @@ document.addEventListener('keydown', function(e) {
             
             <div class="tab-pane fade show active" id="incoming" role="tabpanel" aria-labelledby="incoming-tab">
                 <h2 class="mt-4 mb-3">Incoming Task</h2>
-                <form method="GET" action="#" class="mb-3">
+                <form method="GET" action="draftmeasurestask.html" class="mb-3">
                     <input type="hidden" name="tab" value="incoming">
                     <div class="row g-2">
                         <div class="col-md-6">
@@ -2455,18 +2420,18 @@ document.addEventListener('keydown', function(e) {
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Previous">
+                                <a class="page-link" href="draftmeasurestask.html?page=0&amp;search=" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                                                             <li class="page-item active">
-                                    <a class="page-link" href="draftmeasurestask.html">1</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page=1&amp;search=">1</a>
                                 </li>
                                                             <li class="page-item ">
-                                    <a class="page-link" href="draftmeasurestask.html">2</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page=2&amp;search=">2</a>
                                 </li>
                                                         <li class="page-item ">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Next">
+                                <a class="page-link" href="draftmeasurestask.html?page=2&amp;search=" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -2479,7 +2444,7 @@ document.addEventListener('keydown', function(e) {
                 <h2 class="mt-4 mb-3">In Review for Docketing</h2>
                 
                 <!-- Date Filter and Search Form -->
-                <form method="GET" action="#" class="mb-3">
+                <form method="GET" action="draftmeasurestask.html" class="mb-3">
                     <input type="hidden" name="tab" value="pending-measures">
                     <div class="row g-2 align-items-end">
                         <div class="col-md-2">
@@ -2719,15 +2684,15 @@ document.addEventListener('keydown', function(e) {
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Previous">
+                                <a class="page-link" href="draftmeasurestask.html?page_pending=0&amp;search_pending=&amp;date_from=&amp;date_to=&amp;tab=pending-measures" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                                                             <li class="page-item active">
-                                    <a class="page-link" href="draftmeasurestask.html">1</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_pending=1&amp;search_pending=&amp;date_from=&amp;date_to=&amp;tab=pending-measures">1</a>
                                 </li>
                                                         <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Next">
+                                <a class="page-link" href="draftmeasurestask.html?page_pending=2&amp;search_pending=&amp;date_from=&amp;date_to=&amp;tab=pending-measures" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -2747,7 +2712,7 @@ document.addEventListener('keydown', function(e) {
 
             <div class="tab-pane fade" id="ordinances" role="tabpanel" aria-labelledby="ordinances-tab">
                 <h2 class="mt-4 mb-3">Proposed Ordinances</h2>
-                <form method="GET" action="#" class="mb-3">
+                <form method="GET" action="draftmeasurestask.html" class="mb-3">
                     <input type="hidden" name="tab" value="ordinances">
                     <div class="row g-2">
                         <div class="col-md-6">
@@ -2925,18 +2890,18 @@ document.addEventListener('keydown', function(e) {
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Previous">
+                                <a class="page-link" href="draftmeasurestask.html?page_ordinances=0&amp;search_ordinances=&amp;tab=ordinances" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                                                             <li class="page-item active">
-                                    <a class="page-link" href="draftmeasurestask.html">1</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_ordinances=1&amp;search_ordinances=&amp;tab=ordinances">1</a>
                                 </li>
                                                             <li class="page-item ">
-                                    <a class="page-link" href="draftmeasurestask.html">2</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_ordinances=2&amp;search_ordinances=&amp;tab=ordinances">2</a>
                                 </li>
                                                         <li class="page-item ">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Next">
+                                <a class="page-link" href="draftmeasurestask.html?page_ordinances=2&amp;search_ordinances=&amp;tab=ordinances" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -2947,7 +2912,7 @@ document.addEventListener('keydown', function(e) {
 
             <div class="tab-pane fade" id="resolutions" role="tabpanel" aria-labelledby="resolutions-tab">
                 <h2 class="mt-4 mb-3">Proposed Resolutions</h2>
-                <form method="GET" action="#" class="mb-3">
+                <form method="GET" action="draftmeasurestask.html" class="mb-3">
                     <input type="hidden" name="tab" value="resolutions">
                     <div class="row g-2">
                         <div class="col-md-6">
@@ -3105,15 +3070,15 @@ document.addEventListener('keydown', function(e) {
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Previous">
+                                <a class="page-link" href="draftmeasurestask.html?page_resolutions=0&amp;search_resolutions=&amp;tab=resolutions" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                                                             <li class="page-item active">
-                                    <a class="page-link" href="draftmeasurestask.html">1</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_resolutions=1&amp;search_resolutions=&amp;tab=resolutions">1</a>
                                 </li>
                                                         <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Next">
+                                <a class="page-link" href="draftmeasurestask.html?page_resolutions=2&amp;search_resolutions=&amp;tab=resolutions" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -3124,7 +3089,7 @@ document.addEventListener('keydown', function(e) {
 
             <div class="tab-pane fade" id="enacted-ordinances" role="tabpanel" aria-labelledby="enacted-ordinances-tab">
                 <h2 class="mt-4 mb-3">Enacted Ordinances</h2>
-                <form method="GET" action="#" class="mb-3">
+                <form method="GET" action="draftmeasurestask.html" class="mb-3">
                     <input type="hidden" name="tab" value="enacted-ordinances">
                     <div class="row g-2">
                         <div class="col-md-6">
@@ -3302,18 +3267,18 @@ document.addEventListener('keydown', function(e) {
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Previous">
+                                <a class="page-link" href="draftmeasurestask.html?page_enacted_ordinances=0&amp;search_enacted_ordinances=&amp;tab=enacted-ordinances" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                                                             <li class="page-item active">
-                                    <a class="page-link" href="draftmeasurestask.html">1</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_enacted_ordinances=1&amp;search_enacted_ordinances=&amp;tab=enacted-ordinances">1</a>
                                 </li>
                                                             <li class="page-item ">
-                                    <a class="page-link" href="draftmeasurestask.html">2</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_enacted_ordinances=2&amp;search_enacted_ordinances=&amp;tab=enacted-ordinances">2</a>
                                 </li>
                                                         <li class="page-item ">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Next">
+                                <a class="page-link" href="draftmeasurestask.html?page_enacted_ordinances=2&amp;search_enacted_ordinances=&amp;tab=enacted-ordinances" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -3324,7 +3289,7 @@ document.addEventListener('keydown', function(e) {
 
             <div class="tab-pane fade" id="enacted-resolutions" role="tabpanel" aria-labelledby="enacted-resolutions-tab">
                 <h2 class="mt-4 mb-3">Enacted Resolutions</h2>
-                <form method="GET" action="#" class="mb-3">
+                <form method="GET" action="draftmeasurestask.html" class="mb-3">
                     <input type="hidden" name="tab" value="enacted-resolutions">
                     <div class="row g-2">
                         <div class="col-md-6">
@@ -3494,15 +3459,15 @@ document.addEventListener('keydown', function(e) {
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Previous">
+                                <a class="page-link" href="draftmeasurestask.html?page_enacted_resolutions=0&amp;search_enacted_resolutions=&amp;tab=enacted-resolutions" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                                                             <li class="page-item active">
-                                    <a class="page-link" href="draftmeasurestask.html">1</a>
+                                    <a class="page-link" href="draftmeasurestask.html?page_enacted_resolutions=1&amp;search_enacted_resolutions=&amp;tab=enacted-resolutions">1</a>
                                 </li>
                                                         <li class="page-item disabled">
-                                <a class="page-link" href="draftmeasurestask.html" aria-label="Next">
+                                <a class="page-link" href="draftmeasurestask.html?page_enacted_resolutions=2&amp;search_enacted_resolutions=&amp;tab=enacted-resolutions" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>

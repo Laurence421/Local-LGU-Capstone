@@ -1,43 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-/* Static snapshot: there is no server, so answer requests and form posts with a notice */
-(function () {
-  var msg = 'This is a static portfolio snapshot of the LGU2 Research Section system. Saving, sending and searching need the live demo.';
-  function toast() {
-    var t = document.createElement('div');
-    t.textContent = msg;
-    t.setAttribute('role', 'status');
-    t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;max-width:90%;padding:12px 18px;border-radius:10px;background:var(--brand-primary,#1a4d64);color:#fff;font:14px Montserrat,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)';
-    document.body.appendChild(t);
-    setTimeout(function () { t.remove(); }, 4000);
-  }
-  var demoReply = { success: false, status: 'error', demo: true, message: msg, data: [], requests: [] };
-  var realFetch = window.fetch;
-  window.fetch = function (input) {
-    var url = typeof input === 'string' ? input : (input && input.url) || '';
-    if (/\.php(\?|$)/.test(url) || url === '' || url[0] === '?') {
-      toast();
-      return Promise.resolve(new Response(JSON.stringify(demoReply), { status: 200, headers: { 'Content-Type': 'application/json' } }));
-    }
-    return realFetch.apply(this, arguments);
-  };
-  var open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open = function (m, url) { this._demo = /\.php(\?|$)/.test(url) || url === '' || String(url)[0] === '?'; return open.apply(this, arguments); };
-  XMLHttpRequest.prototype.send = function () {
-    if (!this._demo) return send.apply(this, arguments);
-    var x = this;
-    Object.defineProperty(x, 'readyState', { value: 4 });
-    Object.defineProperty(x, 'status', { value: 200 });
-    Object.defineProperty(x, 'responseText', { value: JSON.stringify(demoReply) });
-    Object.defineProperty(x, 'response', { value: JSON.stringify(demoReply) });
-    toast();
-    setTimeout(function () { x.onreadystatechange && x.onreadystatechange(); x.onload && x.onload(); }, 0);
-  };
-  document.addEventListener('submit', function (e) { e.preventDefault(); toast(); }, true);
-})();
-</script>
+<script src="../demo-data.js"></script>
+<script src="../demo-backend.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin Dashboard - Research Section</title>
@@ -52,7 +17,7 @@
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <!-- Super Admin Styles -->
     <link rel="stylesheet" href="../assets/css/super_styles.css">
@@ -769,8 +734,9 @@ document.addEventListener('keydown', function(e) {
     <!-- Charts -->
     <script>
         // Activity Chart
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        new Chart(ctx, {
+        const activityCanvas = document.getElementById('activityChart');
+        const ctx = activityCanvas ? activityCanvas.getContext('2d') : null;
+        if (ctx) new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],

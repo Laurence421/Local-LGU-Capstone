@@ -105,7 +105,7 @@ $systemInfo = SSO_SYSTEMS[$currentSystem] ?? ['name' => 'LGU Research System', '
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <!-- Super Admin Styles -->
     <link rel="stylesheet" href="<?= e(url('assets/css/super_styles.css')) ?>">
@@ -434,8 +434,9 @@ $systemInfo = SSO_SYSTEMS[$currentSystem] ?? ['name' => 'LGU Research System', '
     <!-- Charts -->
     <script>
         // Activity Chart
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        new Chart(ctx, {
+        const activityCanvas = document.getElementById('activityChart');
+        const ctx = activityCanvas ? activityCanvas.getContext('2d') : null;
+        if (ctx) new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],

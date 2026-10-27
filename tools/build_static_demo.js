@@ -11,6 +11,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const [, , baseArg, outArg] = process.argv;
 if (!baseArg || !outArg) {
@@ -83,6 +84,13 @@ function rewrite(p, html) {
   const file = outPath(p);
   const toRoot = path.posix.relative(path.posix.dirname(file), '.') || '.';
 
+  // Forms: GET forms (search, filters) reload this page with their query; POST forms go to demo-backend.js
+  html = html.replace(/<form\b[^>]*>/gi, (tag) => {
+    if (!/\saction="/i.test(tag)) return tag;
+    const isPost = /\smethod="?post/i.test(tag);
+    return tag.replace(/\saction="[^"]*"/i, ` action="${isPost ? '#' : path.posix.basename(file)}"`);
+  });
+
   html = html.replace(/\b(href|src|action)="([^"]*)"/g, (all, attr, value) => {
     if (/^(#|javascript:|mailto:|data:|https?:\/\/(?!127\.0\.0\.1))/i.test(value)) return all;
     let u;
@@ -96,7 +104,9 @@ function rewrite(p, html) {
     if (u.pathname.endsWith('.php')) {
       if (attr === 'action') return `${attr}="#"`;
       const target = pages.get(u.pathname) ? outPath(u.pathname) : (u.pathname.endsWith('/logout.php') || u.pathname.endsWith('/index.php') ? 'dashboard.html' : null);
-      return target ? `${attr}="${relativeTo(file, target)}${hash}"` : `${attr}="#"`;
+      // Keep ?tab=, ?page=, ?view=, ?search= — demo-backend.js reads them
+      const query = u.search && !u.searchParams.has('action') ? u.search.replace(/&/g, '&amp;') : '';
+      return target ? `${attr}="${relativeTo(file, target)}${query}${hash}"` : `${attr}="#"`;
     }
     const asset = decodeURIComponent(u.pathname.slice(BASE.pathname.length));
     return `${attr}="${relativeTo(file, asset)}"`;
@@ -111,44 +121,10 @@ function rewrite(p, html) {
   html = html.replace(/Portfolio demo with sample data: saving, sending and deleting are turned off\./g,
     'Static portfolio snapshot with sample data: buttons that save, send or search are turned off.');
 
-  const shim = `<script>
-/* Static snapshot: there is no server, so answer requests and form posts with a notice */
-(function () {
-  var msg = 'This is a static portfolio snapshot of the LGU2 Research Section system. Saving, sending and searching need the live demo.';
-  function toast() {
-    var t = document.createElement('div');
-    t.textContent = msg;
-    t.setAttribute('role', 'status');
-    t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;max-width:90%;padding:12px 18px;border-radius:10px;background:var(--brand-primary,#1a4d64);color:#fff;font:14px Montserrat,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)';
-    document.body.appendChild(t);
-    setTimeout(function () { t.remove(); }, 4000);
-  }
-  var demoReply = { success: false, status: 'error', demo: true, message: msg, data: [], requests: [] };
-  var realFetch = window.fetch;
-  window.fetch = function (input) {
-    var url = typeof input === 'string' ? input : (input && input.url) || '';
-    if (/\\.php(\\?|$)/.test(url) || url === '' || url[0] === '?') {
-      toast();
-      return Promise.resolve(new Response(JSON.stringify(demoReply), { status: 200, headers: { 'Content-Type': 'application/json' } }));
-    }
-    return realFetch.apply(this, arguments);
-  };
-  var open = XMLHttpRequest.prototype.open, send = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open = function (m, url) { this._demo = /\\.php(\\?|$)/.test(url) || url === '' || String(url)[0] === '?'; return open.apply(this, arguments); };
-  XMLHttpRequest.prototype.send = function () {
-    if (!this._demo) return send.apply(this, arguments);
-    var x = this;
-    Object.defineProperty(x, 'readyState', { value: 4 });
-    Object.defineProperty(x, 'status', { value: 200 });
-    Object.defineProperty(x, 'responseText', { value: JSON.stringify(demoReply) });
-    Object.defineProperty(x, 'response', { value: JSON.stringify(demoReply) });
-    toast();
-    setTimeout(function () { x.onreadystatechange && x.onreadystatechange(); x.onload && x.onload(); }, 0);
-  };
-  document.addEventListener('submit', function (e) { e.preventDefault(); toast(); }, true);
-})();
-</script>`;
-  return html.replace(/<head>/i, '<head>\n' + shim);
+  // The in-browser backend (tools/static-demo/demo-backend.js) and its sample data load before the page scripts
+  const scripts = `<script src="${toRoot}/demo-data.js"></script>
+<script src="${toRoot}/demo-backend.js"></script>`;
+  return html.replace(/<head>/i, '<head>\n' + scripts);
 }
 
 function copyDir(src, dst, skip) {
@@ -175,6 +151,13 @@ function copyDir(src, dst, skip) {
     count++;
   }
   copyDir(path.join(ROOT, 'assets'), path.join(OUT, 'assets'), (name) => name === 'avatars');
+  fs.copyFileSync(path.join(__dirname, 'static-demo', 'demo-backend.js'), path.join(OUT, 'demo-backend.js'));
+  // Sample data from the demo database (export_demo_data.php refuses to run outside demo mode).
+  // PHP_BIN / PHP_ARGS override the PHP command, e.g. for a portable PHP.
+  const phpArgs = process.env.PHP_ARGS ? process.env.PHP_ARGS.split(' ') : [];
+  const exported = execFileSync(process.env.PHP_BIN || 'php', [...phpArgs, path.join(__dirname, 'export_demo_data.php')],
+    { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  fs.writeFileSync(path.join(OUT, 'demo-data.js'), exported);
   fs.writeFileSync(path.join(OUT, 'index.html'),
     '<!doctype html><meta charset="utf-8"><title>LGU2 Research Section — Portfolio Demo</title>' +
     '<meta http-equiv="refresh" content="0; url=dashboard.html"><a href="dashboard.html">Open the demo</a>\n');

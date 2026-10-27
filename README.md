@@ -8,7 +8,9 @@ Minutes, Agenda, Committee, Committee Journal, Journal, Archives and Research) t
 other through APIs and share a single sign-on.
 
 **[▶ Open the live portfolio demo](https://laurence421.github.io/Local-LGU-Capstone/)**: no login needed,
-all data is fictional sample data.
+all data is fictional sample data. Everything in the sidebar works: send a draft measure to Records, add
+reviews, filter and page through the tabs, export a PDF, manage accounts, and submit and process document
+requests. Your changes stay in your own browser; **Reset demo** in the banner restores the sample data.
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -102,15 +104,21 @@ GitHub only runs workflows from `.github/workflows/`, so move `deploy.yml` there
 Two ways to show the system without real data or a login. Both use made-up sample data from
 `tools/seed_demo.php` (every name and measure in it is fictional).
 
-**Static snapshot on GitHub Pages (free, never expires).** `portfolio-demo/` holds every page as plain HTML.
-`.github/workflows/pages.yml` publishes it: in the GitHub repository, set Settings → Pages → Source to
-"GitHub Actions", push, and the site appears at `https://<user>.github.io/<repo>/`. Buttons that save, send
-or search show a notice, since there is no server. To rebuild it after changing pages, run the live demo
-locally (below) and:
+**Static demo on GitHub Pages (free, never expires).** `portfolio-demo/` holds every page as HTML plus a
+small in-browser backend: `demo-backend.js` (source in `tools/static-demo/`) answers the requests the pages
+send to the PHP endpoints, using the sample data in `demo-data.js`, and redraws the pages the server used to
+fill in (Draft Measures tabs, Accounts, dashboard counters). Changes are saved in the visitor's browser
+(localStorage). `.github/workflows/pages.yml` publishes it: in the GitHub repository, set Settings → Pages →
+Source to "GitHub Actions", push, and the site appears at `https://<user>.github.io/<repo>/`.
+
+To rebuild it after changing pages, run the live demo locally (below, with `DEMO_MODE=true`) and:
 
 ```
 node tools/build_static_demo.js http://localhost/local-lgu-research portfolio-demo
 ```
+
+It crawls the pages and runs `tools/export_demo_data.php` for the data (set `PHP_BIN` if `php` is not on
+your PATH). The export refuses to run outside demo mode, so real records can never be published.
 
 **Live demo on a PHP host (pages and lists work, writes are refused).** Use a separate site (for example a
 demo subdomain) with its own empty database, never the real one:

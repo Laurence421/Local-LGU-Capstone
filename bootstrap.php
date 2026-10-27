@@ -235,7 +235,8 @@ function demo_guard_request()
     $readOnlyPosts = ['verify_password.php', 'generate_pdf.php'];   // screen-lock unlock, PDF preview
     $readOnlyActions = ['get_user', 'get_requests', 'get_sync_status'];
 
-    $isWrite = ($_SERVER['REQUEST_METHOD'] === 'POST' && !in_array($script, $readOnlyPosts, true))
+    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    $isWrite = (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true) && !in_array($script, $readOnlyPosts, true))
         || (isset($_GET['action']) && !in_array($_GET['action'], $readOnlyActions, true));
     if (!$isWrite) {
         return;
